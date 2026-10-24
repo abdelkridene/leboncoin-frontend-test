@@ -17,12 +17,14 @@ interface ConversationPanelProps {
 
 export const ConversationPanel = ({ conversationId }: ConversationPanelProps) => {
   const loggedUserId = useLoggedUserId()
-  const { data: conversation, isPending, isError, refetch } = useConversation(conversationId)
+  const { data: conversation, isPending, refetch } = useConversation(conversationId)
   const headingRef = useFocusOnMount<HTMLHeadingElement>(useIsMobile() && Boolean(conversation))
   useRememberViewedConversation(conversationId)
 
   if (isPending) return <MessageListSkeleton />
-  if (isError) return <ErrorState description="Impossible de charger la conversation." onRetry={() => refetch()} />
+  if (conversation === undefined) {
+    return <ErrorState description="Impossible de charger la conversation." onRetry={() => refetch()} />
+  }
   if (!conversation) {
     return (
       <EmptyState title="Conversation introuvable" description="Elle a peut-être été supprimée.">

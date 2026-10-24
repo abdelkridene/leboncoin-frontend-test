@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+// The CSP forbids eval: stop zod from probing for it to JIT-compile its parsers.
+z.config({ jitless: true })
+
 const idSchema = z.number().int().nonnegative()
 
 const timestampSchema = z.union([

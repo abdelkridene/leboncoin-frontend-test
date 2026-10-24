@@ -4,7 +4,9 @@ import { http, HttpResponse } from 'msw'
 import { axe } from 'jest-axe'
 import { server } from '@/test/server'
 import { apiUrl } from '@/test/handlers'
-import { renderWithProviders } from '@/test/renderWithProviders'
+import { createTestQueryClient, renderWithProviders } from '@/test/renderWithProviders'
+import { messages } from '@/test/fixtures'
+import { queryKeys } from '@/api/queryKeys'
 import { ConversationThread } from './ConversationThread'
 
 const renderThread = (conversationId = 1) =>
@@ -89,6 +91,22 @@ describe('ConversationThread', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
     expect(await screen.findByRole('log')).toBeInTheDocument()
+  })
+
+  it('keeps showing cached messages when a refresh fails', async () => {
+    server.use(http.get(apiUrl('/messages/:conversationId'), () => new HttpResponse(null, { status: 503 }), { once: true }))
+    const queryClient = createTestQueryClient()
+    queryClient.setQueryData(queryKeys.messages(1), messages)
+    renderWithProviders(
+      <ConversationThread conversationId={1} loggedUserId={1} interlocutorName="Jeremie" />,
+      queryClient,
+    )
+
+    expect(await screen.findByText(/Connexion instable/)).toBeInTheDocument()
+    expect(screen.getByRole('log')).toHaveTextContent('Oui, toujours !')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Actualiser' }))
+    await waitFor(() => expect(screen.queryByText(/Connexion instable/)).not.toBeInTheDocument())
   })
 
   it('has no accessibility violations', async () => {

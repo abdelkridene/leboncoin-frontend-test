@@ -1,10 +1,12 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { axe } from 'jest-axe'
 import { server } from '@/test/server'
 import { apiUrl } from '@/test/handlers'
-import { renderWithProviders } from '@/test/renderWithProviders'
+import { createTestQueryClient, renderWithProviders } from '@/test/renderWithProviders'
+import { conversations } from '@/test/fixtures'
+import { queryKeys } from '@/api/queryKeys'
 import { mockMobileViewport } from '@/test/mockViewport'
 import { useRememberViewedConversation } from '../hooks/useConversationFocusRestoration'
 import { ConversationsSidebar } from './ConversationsSidebar'
@@ -49,6 +51,20 @@ describe('ConversationsSidebar', () => {
     renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
     expect(await screen.findByRole('link', { name: /Patrick/ })).toHaveFocus()
     restore()
+  })
+
+  it('keeps showing cached conversations when a refresh fails', async () => {
+    server.use(http.get(apiUrl('/conversations/:userId'), () => new HttpResponse(null, { status: 503 }), { once: true }))
+    const queryClient = createTestQueryClient()
+    queryClient.setQueryData(queryKeys.conversations(1), conversations)
+    renderWithProviders(<ConversationsSidebar selectedConversationId={null} />, queryClient)
+
+    expect(await screen.findByText(/Connexion instable/)).toBeInTheDocument()
+    expect(screen.getAllByRole('link')).toHaveLength(3)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Actualiser' }))
+    await waitFor(() => expect(screen.queryByText(/Connexion instable/)).not.toBeInTheDocument())
   })
 
   it('has no accessibility violations', async () => {

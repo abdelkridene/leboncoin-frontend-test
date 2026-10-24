@@ -1,5 +1,6 @@
 import { EmptyState } from '@/shared/components/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState'
+import { StaleDataNotice } from '@/shared/components/StaleDataNotice'
 import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
 import { useRestoreConversationFocus } from '../hooks/useConversationFocusRestoration'
@@ -18,19 +19,23 @@ const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) =
   const listRef = useRestoreConversationFocus<HTMLUListElement>(useIsMobile() && conversations !== undefined)
 
   if (isPending) return <ConversationListSkeleton />
-  if (isError) {
+  if (!conversations) {
     return <ErrorState description="Impossible de charger vos conversations." onRetry={() => refetch()} />
   }
-  if (conversations.length === 0) {
-    return <EmptyState title="Aucune conversation" description="Vos échanges avec les vendeurs apparaîtront ici." />
-  }
   return (
-    <ConversationList
-      conversations={conversations}
-      loggedUserId={loggedUserId}
-      selectedConversationId={selectedConversationId}
-      listRef={listRef}
-    />
+    <>
+      {isError && <StaleDataNotice onRetry={() => refetch()} />}
+      {conversations.length === 0 ? (
+        <EmptyState title="Aucune conversation" description="Vos échanges avec les vendeurs apparaîtront ici." />
+      ) : (
+        <ConversationList
+          conversations={conversations}
+          loggedUserId={loggedUserId}
+          selectedConversationId={selectedConversationId}
+          listRef={listRef}
+        />
+      )}
+    </>
   )
 }
 

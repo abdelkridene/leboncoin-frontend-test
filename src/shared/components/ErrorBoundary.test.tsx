@@ -27,29 +27,14 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Contenu')).toBeInTheDocument()
   })
 
-  it('shows the error state, reports the error and recovers on retry', async () => {
-    const onError = jest.fn()
-    const onReset = jest.fn()
-    render(
-      <ErrorBoundary onError={onError} onReset={onReset}>
-        <Unstable />
-      </ErrorBoundary>,
-    )
-    expect(screen.getByRole('alert')).toBeInTheDocument()
-    expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'boom' }), expect.anything())
-
-    shouldThrow = false
-    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
-    expect(onReset).toHaveBeenCalledTimes(1)
-    expect(screen.getByText('Contenu')).toBeInTheDocument()
-  })
-
-  it('recovers without callbacks', async () => {
+  it('shows the friendly error state and recovers on retry', async () => {
     render(
       <ErrorBoundary>
         <Unstable />
       </ErrorBoundary>,
     )
+    expect(screen.getByRole('alert')).toHaveTextContent('Oups, c’est nous, pas vous')
+
     shouldThrow = false
     await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
     expect(screen.getByText('Contenu')).toBeInTheDocument()

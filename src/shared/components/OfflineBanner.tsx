@@ -7,7 +7,7 @@ export const OfflineBanner = () => {
   return (
     <div role="status">
       {!isOnline && (
-        <p className={styles.banner}>Vous êtes hors ligne. Vérifiez votre connexion internet.</p>
+        <p className={styles.banner}>Vous êtes hors ligne. Vos messages partiront dès le retour de la connexion.</p>
       )}
     </div>
   )

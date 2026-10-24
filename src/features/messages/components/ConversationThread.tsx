@@ -1,5 +1,6 @@
 import { EmptyState } from '@/shared/components/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState'
+import { StaleDataNotice } from '@/shared/components/StaleDataNotice'
 import { useMessageComposer } from '../hooks/useMessageComposer'
 import { useMessages } from '../hooks/useMessages'
 import { useSendMessage } from '../hooks/useSendMessage'
@@ -20,7 +21,7 @@ export const ConversationThread = ({ conversationId, loggedUserId, interlocutorN
 
   const renderMessages = () => {
     if (isPending) return <MessageListSkeleton />
-    if (isError) return <ErrorState description="Impossible de charger les messages." onRetry={() => refetch()} />
+    if (!messages) return <ErrorState description="Impossible de charger les messages." onRetry={() => refetch()} />
     if (messages.length === 0 && outgoingMessages.length === 0) {
       return <EmptyState title="Aucun message" description={`Envoyez le premier message à ${interlocutorName}.`} />
     }
@@ -38,6 +39,7 @@ export const ConversationThread = ({ conversationId, loggedUserId, interlocutorN
 
   return (
     <>
+      {isError && messages && <StaleDataNotice onRetry={() => refetch()} />}
       {renderMessages()}
       <MessageComposer
         draft={composer.draft}
