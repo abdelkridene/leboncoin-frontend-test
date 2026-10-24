@@ -39,8 +39,8 @@ select {
 }
 
 :focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 
 .visually-hidden {

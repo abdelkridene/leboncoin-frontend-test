@@ -23,10 +23,6 @@
   field-sizing: content;
 }
 
-.input:focus-visible {
-  border-color: var(--color-focus);
-}
-
 .counter {
   order: 3;
   flex-basis: 100%;

@@ -36,6 +36,6 @@
   }
 }
 
-.title:focus {
+.title:focus:not(:focus-visible) {
   outline: none;
 }

@@ -54,7 +54,8 @@
   --size-header: 4rem;
   --size-content-max: 80rem;
   --size-bubble-max: 75%;
-  --focus-ring: 0 0 0 3px var(--color-surface), 0 0 0 5px var(--color-focus);
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
 
   --duration-fast: 150ms;
 }

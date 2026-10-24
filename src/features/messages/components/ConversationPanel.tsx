@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { EmptyState } from '@/shared/components/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState'
 import { useFocusOnMount } from '@/shared/hooks/useFocusOnMount'
-import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
 import { useRememberViewedConversation } from '@/features/conversations/hooks/useConversationFocusRestoration'
 import { useConversation } from '@/features/conversations/hooks/useConversation'
@@ -18,7 +17,7 @@ interface ConversationPanelProps {
 export const ConversationPanel = ({ conversationId }: ConversationPanelProps) => {
   const loggedUserId = useLoggedUserId()
   const { data: conversation, isPending, refetch } = useConversation(conversationId)
-  const headingRef = useFocusOnMount<HTMLHeadingElement>(useIsMobile() && Boolean(conversation))
+  const headingRef = useFocusOnMount<HTMLHeadingElement>(Boolean(conversation))
   useRememberViewedConversation(conversationId)
 
   if (isPending) return <MessageListSkeleton />

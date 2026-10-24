@@ -5,7 +5,6 @@ import { axe } from 'jest-axe'
 import { server } from '@/test/server'
 import { apiUrl } from '@/test/handlers'
 import { renderWithProviders } from '@/test/renderWithProviders'
-import { mockMobileViewport } from '@/test/mockViewport'
 import { ConversationPanel } from './ConversationPanel'
 
 const failOnce = (path: string) =>
@@ -20,15 +19,9 @@ describe('ConversationPanel', () => {
     expect(await screen.findByRole('log')).toHaveTextContent('Bonjour, il est toujours disponible ?')
   })
 
-  it('moves the focus to the conversation heading on mobile only', async () => {
-    const { unmount } = renderWithProviders(<ConversationPanel conversationId={1} />)
-    expect(await screen.findByRole('heading', { name: 'Jeremie' })).not.toHaveFocus()
-    unmount()
-
-    const restore = mockMobileViewport()
+  it('moves the focus to the conversation heading once it is loaded', async () => {
     renderWithProviders(<ConversationPanel conversationId={1} />)
     expect(await screen.findByRole('heading', { name: 'Jeremie' })).toHaveFocus()
-    restore()
   })
 
   it('shows an empty state for a conversation without messages', async () => {
