@@ -1,6 +1,8 @@
 import { EmptyState } from '@/shared/components/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState'
+import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
+import { useRestoreConversationFocus } from '../hooks/useConversationFocusRestoration'
 import { useConversations } from '../hooks/useConversations'
 import { ConversationList } from './ConversationList'
 import { ConversationListSkeleton } from './ConversationListSkeleton'
@@ -13,6 +15,7 @@ interface ConversationsSidebarProps {
 const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) => {
   const loggedUserId = useLoggedUserId()
   const { data: conversations, isPending, isError, refetch } = useConversations()
+  const listRef = useRestoreConversationFocus<HTMLUListElement>(useIsMobile() && conversations !== undefined)
 
   if (isPending) return <ConversationListSkeleton />
   if (isError) {
@@ -26,6 +29,7 @@ const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) =
       conversations={conversations}
       loggedUserId={loggedUserId}
       selectedConversationId={selectedConversationId}
+      listRef={listRef}
     />
   )
 }

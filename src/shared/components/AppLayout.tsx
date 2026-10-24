@@ -18,7 +18,7 @@ export const AppLayout = ({ sidebar, children, activePanel }: AppLayoutProps) =>
   <div className={styles.page}>
     <SkipLink />
     <header className={styles.header}>
-      <Image src={Logo} alt="leboncoin" width={103} height={32} />
+      <Image src={Logo} alt="leboncoin" width={103} height={32} priority />
       <h1 className={styles.title}>Messages</h1>
     </header>
     <OfflineBanner />

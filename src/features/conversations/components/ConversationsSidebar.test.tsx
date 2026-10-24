@@ -5,6 +5,8 @@ import { axe } from 'jest-axe'
 import { server } from '@/test/server'
 import { apiUrl } from '@/test/handlers'
 import { renderWithProviders } from '@/test/renderWithProviders'
+import { mockMobileViewport } from '@/test/mockViewport'
+import { useRememberViewedConversation } from '../hooks/useConversationFocusRestoration'
 import { ConversationsSidebar } from './ConversationsSidebar'
 
 describe('ConversationsSidebar', () => {
@@ -34,6 +36,19 @@ describe('ConversationsSidebar', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Impossible de charger vos conversations.')
     await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
     expect(await screen.findAllByRole('link')).toHaveLength(3)
+  })
+
+  it('gives the focus back to the conversation the user returns from on mobile', async () => {
+    const ViewedConversation = () => {
+      useRememberViewedConversation(2)
+      return null
+    }
+    renderWithProviders(<ViewedConversation />).unmount()
+    const restore = mockMobileViewport()
+
+    renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
+    expect(await screen.findByRole('link', { name: /Patrick/ })).toHaveFocus()
+    restore()
   })
 
   it('has no accessibility violations', async () => {

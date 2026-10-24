@@ -15,6 +15,17 @@ class IntersectionObserverStub {
 }
 Object.defineProperty(window, 'IntersectionObserver', { writable: true, value: IntersectionObserverStub })
 
+// jsdom has no matchMedia: default to a desktop viewport, tests can override it.
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    addEventListener: () => undefined,
+    removeEventListener: () => undefined,
+  }),
+})
+
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())

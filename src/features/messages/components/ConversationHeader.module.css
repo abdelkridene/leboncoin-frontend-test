@@ -35,3 +35,7 @@
     display: none;
   }
 }
+
+.title:focus {
+  outline: none;
+}
