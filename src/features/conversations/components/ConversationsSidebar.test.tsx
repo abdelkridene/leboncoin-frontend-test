@@ -67,6 +67,17 @@ describe('ConversationsSidebar', () => {
     await waitFor(() => expect(screen.queryByText(/Connexion instable/)).not.toBeInTheDocument())
   })
 
+  it('prefetches the messages of a conversation on hover and focus', async () => {
+    const { queryClient } = renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
+    const jeremie = await screen.findByRole('link', { name: /Jeremie/ })
+
+    await userEvent.hover(jeremie)
+    await waitFor(() => expect(queryClient.getQueryData(queryKeys.messages(1))).toBeDefined())
+
+    screen.getByRole('link', { name: /Patrick/ }).focus()
+    await waitFor(() => expect(queryClient.getQueryData(queryKeys.messages(2))).toBeDefined())
+  })
+
   it('has no accessibility violations', async () => {
     const { container } = renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
     await screen.findAllByRole('link')

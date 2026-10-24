@@ -9,6 +9,7 @@ interface ConversationListProps {
   loggedUserId: number
   selectedConversationId: number | null
   listRef?: Ref<HTMLUListElement>
+  onPrefetchConversation?: (conversationId: number) => void
 }
 
 export const ConversationList = ({
@@ -16,6 +17,7 @@ export const ConversationList = ({
   loggedUserId,
   selectedConversationId,
   listRef,
+  onPrefetchConversation,
 }: ConversationListProps) => (
   <ul ref={listRef} className={styles.list}>
     {conversations.map((conversation) => (
@@ -25,6 +27,7 @@ export const ConversationList = ({
         interlocutorName={getInterlocutor(conversation, loggedUserId).nickname}
         lastMessageTimestamp={conversation.lastMessageTimestamp}
         isSelected={conversation.id === selectedConversationId}
+        onPrefetch={() => onPrefetchConversation?.(conversation.id)}
       />
     ))}
   </ul>

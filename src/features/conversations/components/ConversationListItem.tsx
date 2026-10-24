@@ -9,6 +9,7 @@ interface ConversationListItemProps {
   interlocutorName: string
   lastMessageTimestamp: number
   isSelected: boolean
+  onPrefetch?: () => void
 }
 
 export const ConversationListItem = ({
@@ -16,11 +17,14 @@ export const ConversationListItem = ({
   interlocutorName,
   lastMessageTimestamp,
   isSelected,
+  onPrefetch,
 }: ConversationListItemProps) => (
   <li>
     <Link
       href={href}
       aria-current={isSelected ? 'page' : undefined}
+      onMouseEnter={onPrefetch}
+      onFocus={onPrefetch}
       className={cn(styles.item, isSelected && styles.selected)}
     >
       <Avatar name={interlocutorName} />

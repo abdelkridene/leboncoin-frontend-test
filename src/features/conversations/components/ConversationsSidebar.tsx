@@ -4,6 +4,7 @@ import { StaleDataNotice } from '@/shared/components/StaleDataNotice'
 import { useIsMobile } from '@/shared/hooks/useIsMobile'
 import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
 import { useRestoreConversationFocus } from '../hooks/useConversationFocusRestoration'
+import { usePrefetchMessages } from '@/features/messages/hooks/usePrefetchMessages'
 import { useConversations } from '../hooks/useConversations'
 import { ConversationList } from './ConversationList'
 import { ConversationListSkeleton } from './ConversationListSkeleton'
@@ -17,6 +18,7 @@ interface ConversationsSidebarProps {
 const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) => {
   const loggedUserId = useLoggedUserId()
   const { data: conversations, isPending, isError, refetch } = useConversations()
+  const prefetchMessages = usePrefetchMessages()
   const listRef = useRestoreConversationFocus<HTMLUListElement>(useIsMobile() && conversations !== undefined)
 
   if (isPending) return <ConversationListSkeleton />
@@ -34,6 +36,7 @@ const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) =
           loggedUserId={loggedUserId}
           selectedConversationId={selectedConversationId}
           listRef={listRef}
+          onPrefetchConversation={prefetchMessages}
         />
       )}
     </>
