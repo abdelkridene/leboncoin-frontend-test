@@ -5,7 +5,7 @@ import { createQueryClient } from '@/api/queryClient'
 import '../styles/globals.css'
 
 interface PageProps {
-  dehydratedState?: DehydratedState
+  dehydratedState?: DehydratedState | null
 }
 
 export default function App({ Component, pageProps }: AppProps<PageProps>) {
@@ -13,7 +13,7 @@ export default function App({ Component, pageProps }: AppProps<PageProps>) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <HydrationBoundary state={pageProps.dehydratedState}>
+      <HydrationBoundary state={pageProps.dehydratedState ?? undefined}>
         <Component {...pageProps} />
       </HydrationBoundary>
     </QueryClientProvider>

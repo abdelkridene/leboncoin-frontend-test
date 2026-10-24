@@ -1,19 +1,18 @@
 import type { ReactElement } from 'react'
 import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
-import { dehydrate, type DehydratedState } from '@tanstack/react-query'
-import { createServerQueryClient, prefetchWithinBudget } from '@/api/queryClient'
+import { prefetchForPage, type PrefetchedProps } from '@/api/serverPrefetch'
 import { ConversationsSidebar } from '@/features/conversations/components/ConversationsSidebar'
 import { conversationsQuery } from '@/features/conversations/hooks/conversationsQuery'
 import { AppLayout } from '@/shared/components/AppLayout'
 import { EmptyState } from '@/shared/components/EmptyState'
 import { getLoggedUserId } from '@/utils/getLoggedUserId'
 
-export const getServerSideProps: GetServerSideProps<{ dehydratedState: DehydratedState }> = async () => {
-  const queryClient = createServerQueryClient()
-  await prefetchWithinBudget([queryClient.prefetchQuery(conversationsQuery(getLoggedUserId()))])
-  return { props: { dehydratedState: dehydrate(queryClient) } }
-}
+export const getServerSideProps: GetServerSideProps<PrefetchedProps> = async ({ req }) => ({
+  props: await prefetchForPage(req, (queryClient) => [
+    queryClient.prefetchQuery(conversationsQuery(getLoggedUserId())),
+  ]),
+})
 
 export default function Home(): ReactElement {
   return (

@@ -65,3 +65,12 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--size-touch-target);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: underline;
+}

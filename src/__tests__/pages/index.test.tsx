@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { axe } from 'jest-axe'
 import type { GetServerSidePropsContext } from 'next'
-import type { DehydratedState } from '@tanstack/react-query'
+import type { PrefetchedProps } from '@/api/serverPrefetch'
 import { server } from '@/test/server'
 import { apiUrl } from '@/test/handlers'
 import { conversations } from '@/test/fixtures'
@@ -10,9 +10,9 @@ import { renderWithProviders } from '@/test/renderWithProviders'
 import Home, { getServerSideProps } from '@/pages/index'
 
 const runGetServerSideProps = async () => {
-  const result = await getServerSideProps({} as GetServerSidePropsContext)
+  const result = await getServerSideProps({ req: { headers: {} } } as GetServerSidePropsContext)
   if (!('props' in result)) throw new Error('expected props')
-  return (await result.props) as { dehydratedState: DehydratedState }
+  return (await result.props) as PrefetchedProps
 }
 
 describe('Home page', () => {
@@ -33,12 +33,12 @@ describe('Home page', () => {
 describe('Home getServerSideProps', () => {
   it('prefetches the conversations', async () => {
     const { dehydratedState } = await runGetServerSideProps()
-    expect(dehydratedState.queries[0].state.data).toEqual(conversations)
+    expect(dehydratedState?.queries[0].state.data).toEqual(conversations)
   })
 
   it('still renders the page when the API is down', async () => {
     server.use(http.get(apiUrl('/conversations/:userId'), () => new HttpResponse(null, { status: 503 })))
     const { dehydratedState } = await runGetServerSideProps()
-    expect(dehydratedState.queries).toHaveLength(0)
+    expect(dehydratedState?.queries).toHaveLength(0)
   })
 })
