@@ -5,7 +5,7 @@ import NotFoundPage from '@/pages/404'
 describe('404 page', () => {
   it('explains the page does not exist and links back home', () => {
     render(<NotFoundPage />)
-    expect(screen.getByRole('heading', { level: 1, name: 'Page introuvable' })).toBeInTheDocument()
+    expect(screen.getByRole('main')).toHaveTextContent('Cette page n’existe pas')
     expect(screen.getByRole('link', { name: 'Retour à mes messages' })).toHaveAttribute('href', '/')
   })
 

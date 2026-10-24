@@ -18,5 +18,6 @@ describe('App', () => {
     const props = { Component: DummyPage, pageProps: { dehydratedState }, router: {} as Router } as unknown as AppProps
     render(<App {...props} />)
     expect(screen.getByText('bonjour')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Messages' })).toBeInTheDocument()
   })
 })

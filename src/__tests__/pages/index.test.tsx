@@ -18,7 +18,6 @@ const runGetServerSideProps = async () => {
 describe('Home page', () => {
   it('renders the conversation list and invites to pick a conversation', async () => {
     renderWithProviders(<Home />)
-    expect(screen.getByRole('heading', { level: 1, name: 'Messages' })).toBeInTheDocument()
     expect(screen.getByText('Sélectionnez une conversation')).toBeInTheDocument()
     expect(await screen.findAllByRole('link', { name: /Jeremie|Patrick|Elodie/ })).toHaveLength(3)
   })
