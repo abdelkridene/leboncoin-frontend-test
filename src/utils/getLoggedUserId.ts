@@ -1,4 +1,4 @@
-import type { User } from '../types/user'
+import type { User } from '../api/schemas'
 
 // Default way to use a logged user
 // Feel free to update the user ID for your tests
