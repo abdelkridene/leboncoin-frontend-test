@@ -1,0 +1,32 @@
+.avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-avatar);
+  height: var(--size-avatar);
+  border-radius: var(--radius-full);
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+}
+
+.color1 {
+  background-color: var(--color-avatar-1);
+}
+
+.color2 {
+  background-color: var(--color-avatar-2);
+}
+
+.color3 {
+  background-color: var(--color-avatar-3);
+}
+
+.color4 {
+  background-color: var(--color-avatar-4);
+}
+
+.color5 {
+  background-color: var(--color-avatar-5);
+}

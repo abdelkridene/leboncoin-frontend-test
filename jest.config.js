@@ -1,5 +1,8 @@
 const nextJest = require('next/jest')
 
+// Dates are formatted with Intl, so tests must not depend on the machine's timezone.
+process.env.TZ = 'UTC'
+
 const createJestConfig = nextJest({
   dir: './',
 })
