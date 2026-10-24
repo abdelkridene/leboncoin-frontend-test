@@ -1,0 +1,43 @@
+.form {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--size-touch-target);
+  max-height: 8rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-text-muted);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  line-height: var(--line-height-normal);
+  resize: none;
+  field-sizing: content;
+}
+
+.input:focus-visible {
+  border-color: var(--color-focus);
+}
+
+.counter {
+  order: 3;
+  flex-basis: 100%;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+.send {
+  flex-shrink: 0;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}

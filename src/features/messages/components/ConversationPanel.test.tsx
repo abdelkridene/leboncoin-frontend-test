@@ -40,15 +40,6 @@ describe('ConversationPanel', () => {
     expect(await screen.findByRole('heading', { name: 'Jeremie' })).toBeInTheDocument()
   })
 
-  it('recovers from a messages failure', async () => {
-    failOnce('/messages/:conversationId')
-    renderWithProviders(<ConversationPanel conversationId={1} />)
-    expect(await screen.findByRole('alert')).toHaveTextContent('Impossible de charger les messages.')
-
-    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
-    expect(await screen.findByRole('log')).toBeInTheDocument()
-  })
-
   it('has no accessibility violations', async () => {
     const { container } = renderWithProviders(<ConversationPanel conversationId={1} />)
     await screen.findByRole('log')

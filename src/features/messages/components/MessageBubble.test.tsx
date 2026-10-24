@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { axe } from 'jest-axe'
 import { MessageBubble } from './MessageBubble'
 
@@ -33,5 +34,37 @@ describe('MessageBubble', () => {
   it('has no accessibility violations', async () => {
     const { container } = renderBubble(true)
     expect(await axe(container)).toHaveNoViolations()
+  })
+
+  it('shows a sending indicator instead of the time while pending', () => {
+    render(
+      <ul>
+        <MessageBubble body="Salut" timestamp={1625637849} isMine authorName="Jeremie" status="pending" />
+      </ul>,
+    )
+    expect(screen.getByRole('listitem')).toHaveClass('pending')
+    expect(screen.getByText('Envoi…')).toBeInTheDocument()
+    expect(screen.queryByRole('time')).not.toBeInTheDocument()
+  })
+
+  it('lets the user retry a failed message', async () => {
+    const onRetry = jest.fn()
+    render(
+      <ul>
+        <MessageBubble body="Salut" timestamp={1625637849} isMine authorName="Jeremie" status="failed" onRetry={onRetry} />
+      </ul>,
+    )
+    expect(screen.getByText(/Échec de l’envoi/)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
+    expect(onRetry).toHaveBeenCalledTimes(1)
+  })
+
+  it('disables retry while another message is being sent', () => {
+    render(
+      <ul>
+        <MessageBubble body="Salut" timestamp={1} isMine authorName="Jeremie" status="failed" isRetryDisabled />
+      </ul>,
+    )
+    expect(screen.getByRole('button', { name: 'Réessayer' })).toBeDisabled()
   })
 })

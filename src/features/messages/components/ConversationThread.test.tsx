@@ -1,0 +1,99 @@
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { http, HttpResponse } from 'msw'
+import { axe } from 'jest-axe'
+import { server } from '@/test/server'
+import { apiUrl } from '@/test/handlers'
+import { renderWithProviders } from '@/test/renderWithProviders'
+import { ConversationThread } from './ConversationThread'
+
+const renderThread = (conversationId = 1) =>
+  renderWithProviders(<ConversationThread conversationId={conversationId} loggedUserId={1} interlocutorName="Jeremie" />)
+
+const field = () => screen.getByRole('textbox', { name: 'Message à Jeremie' })
+
+describe('ConversationThread', () => {
+  it('sends a message, clears the field and keeps the focus in it', async () => {
+    renderThread()
+    await screen.findByRole('log')
+
+    await userEvent.type(field(), '  Je suis intéressé  ')
+    await userEvent.click(screen.getByRole('button', { name: 'Envoyer' }))
+
+    expect(await screen.findByText('Je suis intéressé')).toBeInTheDocument()
+    expect(field()).toHaveValue('')
+    expect(field()).toHaveFocus()
+    await waitFor(() => expect(screen.queryByText('Envoi…')).not.toBeInTheDocument())
+  })
+
+  it('sends with Enter and inserts a new line with Shift+Enter', async () => {
+    renderThread()
+    await screen.findByRole('log')
+
+    await userEvent.type(field(), 'Ligne 1{Shift>}{Enter}{/Shift}Ligne 2')
+    expect(field()).toHaveValue('Ligne 1\nLigne 2')
+
+    await userEvent.type(field(), '{Enter}')
+    expect(field()).toHaveValue('')
+    expect(await screen.findByText(/Ligne 1\s+Ligne 2/)).toBeInTheDocument()
+  })
+
+  it('blocks blank messages and concurrent submissions', async () => {
+    let postCount = 0
+    server.use(
+      http.post(apiUrl('/messages/1'), () => {
+        postCount += 1
+        return new Promise<Response>(() => undefined)
+      }),
+    )
+    renderThread()
+    await screen.findByRole('log')
+    const send = screen.getByRole('button', { name: 'Envoyer' })
+
+    await userEvent.type(field(), '   ')
+    expect(send).toBeDisabled()
+
+    await userEvent.type(field(), 'Premier{Enter}')
+    await userEvent.type(field(), 'Second{Enter}')
+    expect(send).toBeDisabled()
+    expect(field()).toHaveValue('Second')
+    expect(postCount).toBe(1)
+  })
+
+  it('keeps a failed message visible and lets the user retry it', async () => {
+    server.use(http.post(apiUrl('/messages/1'), () => new HttpResponse(null, { status: 503 }), { once: true }))
+    renderThread()
+    await screen.findByRole('log')
+
+    await userEvent.type(field(), 'Dernier prix ?{Enter}')
+    expect(await screen.findByText(/Échec de l’envoi/)).toBeInTheDocument()
+    expect(screen.getByText('Dernier prix ?')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
+    await waitFor(() => expect(screen.queryByText(/Échec de l’envoi/)).not.toBeInTheDocument())
+    expect(screen.getByText('Dernier prix ?')).toBeInTheDocument()
+  })
+
+  it('lets the user send the first message of an empty conversation', async () => {
+    renderThread(3)
+    expect(await screen.findByText('Aucun message')).toBeInTheDocument()
+
+    await userEvent.type(field(), 'Bonjour !{Enter}')
+    expect(await screen.findByRole('log')).toHaveTextContent('Bonjour !')
+  })
+
+  it('shows an error when messages cannot be loaded and recovers', async () => {
+    server.use(http.get(apiUrl('/messages/:conversationId'), () => new HttpResponse(null, { status: 503 }), { once: true }))
+    renderThread()
+    expect(await screen.findByRole('alert')).toHaveTextContent('Impossible de charger les messages.')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
+    expect(await screen.findByRole('log')).toBeInTheDocument()
+  })
+
+  it('has no accessibility violations', async () => {
+    const { container } = renderThread()
+    await screen.findByRole('log')
+    expect(await axe(container)).toHaveNoViolations()
+  })
+})
