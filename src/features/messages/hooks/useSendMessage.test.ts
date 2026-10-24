@@ -38,6 +38,17 @@ describe('useSendMessage', () => {
     expect(updatedConversation?.lastMessageTimestamp).toBe(cachedMessages?.at(-1)?.timestamp)
   })
 
+  it('also bumps the conversations created locally', async () => {
+    const { result, queryClient } = setup()
+    const created = { ...conversations[0], id: 1, lastMessageTimestamp: 0 }
+    queryClient.setQueryData(queryKeys.createdConversations(1), [created])
+
+    act(() => result.current.send('Salut'))
+    await waitFor(() => expect(result.current.outgoingMessages).toHaveLength(0))
+    const [updated] = queryClient.getQueryData<typeof conversations>(queryKeys.createdConversations(1)) ?? []
+    expect(updated.lastMessageTimestamp).toBeGreaterThan(0)
+  })
+
   it('keeps a failed message and sends it again on retry', async () => {
     server.use(http.post(apiUrl('/messages/1'), () => new HttpResponse(null, { status: 503 }), { once: true }))
     const { result, queryClient } = setup()

@@ -32,7 +32,8 @@ export const useSendMessage = (conversationId: number) => {
     mutationFn: sendMessage,
     onSuccess: (message) => {
       queryClient.setQueryData<Message[]>(queryKeys.messages(conversationId), (messages = []) => [...messages, message])
-      queryClient.setQueryData<Conversation[]>(queryKeys.conversations(authorId), (conversations) =>
+      // Prefix match: updates both the server list and the conversations created locally.
+      queryClient.setQueriesData<Conversation[]>({ queryKey: queryKeys.conversations(authorId) }, (conversations) =>
         conversations?.map((conversation) =>
           conversation.id === conversationId ? { ...conversation, lastMessageTimestamp: message.timestamp } : conversation,
         ),

@@ -7,6 +7,7 @@ import { useRestoreConversationFocus } from '../hooks/useConversationFocusRestor
 import { useConversations } from '../hooks/useConversations'
 import { ConversationList } from './ConversationList'
 import { ConversationListSkeleton } from './ConversationListSkeleton'
+import { NewConversationButton } from './NewConversationButton'
 import styles from './ConversationsSidebar.module.css'
 
 interface ConversationsSidebarProps {
@@ -41,7 +42,10 @@ const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) =
 
 export const ConversationsSidebar = ({ selectedConversationId }: ConversationsSidebarProps) => (
   <>
-    <h2 className={styles.title}>Mes conversations</h2>
+    <div className={styles.header}>
+      <h2 className={styles.title}>Mes conversations</h2>
+      <NewConversationButton />
+    </div>
     <SidebarContent selectedConversationId={selectedConversationId} />
   </>
 )

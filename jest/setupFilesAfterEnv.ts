@@ -26,6 +26,24 @@ Object.defineProperty(window, 'matchMedia', {
   }),
 })
 
+// Pages Router hooks need a mounted router; tests assert on navigation through this mock.
+jest.mock('next/router', () => {
+  const router = { push: jest.fn().mockResolvedValue(true) }
+  return { useRouter: () => router }
+})
+
+// jsdom does not implement modal dialogs yet.
+HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
+  this.open = true
+}
+HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
+  this.open = false
+  this.dispatchEvent(new Event('close'))
+}
+
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
-afterEach(() => server.resetHandlers())
+afterEach(() => {
+  server.resetHandlers()
+  jest.clearAllMocks()
+})
 afterAll(() => server.close())
