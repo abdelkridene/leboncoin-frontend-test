@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Button } from './Button'
-import styles from './States.module.css'
+import { EmptyState } from './EmptyState'
 
 interface ErrorStateProps {
   title?: string
@@ -15,14 +15,11 @@ export const ErrorState = ({
   illustration,
   onRetry,
 }: ErrorStateProps) => (
-  <div role="alert" className={styles.state}>
-    {illustration}
-    <p className={styles.title}>{title}</p>
-    <p className={styles.description}>{description}</p>
+  <EmptyState role="alert" title={title} description={description} illustration={illustration}>
     {onRetry && (
       <Button variant="secondary" onClick={onRetry}>
         Réessayer
       </Button>
     )}
-  </div>
+  </EmptyState>
 )
