@@ -45,5 +45,8 @@
     "json-server": "^0.17.1",
     "msw": "~2.10.5",
     "typescript": "^5.8.2"
+  },
+  "overrides": {
+    "postcss": "^8.5.31"
   }
 }
