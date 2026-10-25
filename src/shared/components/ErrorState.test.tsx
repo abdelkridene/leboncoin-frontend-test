@@ -19,6 +19,12 @@ describe('ErrorState', () => {
     expect(onRetry).toHaveBeenCalledTimes(1)
   })
 
+  it('shows an illustration above the title', () => {
+    render(<ErrorState illustration={<svg data-testid="illustration" />} />)
+    const illustration = screen.getByTestId('illustration')
+    expect(illustration.nextElementSibling).toHaveTextContent('Oups, c’est nous, pas vous')
+  })
+
   it('has no accessibility violations', async () => {
     const { container } = render(<ErrorState onRetry={jest.fn()} />)
     expect(await axe(container)).toHaveNoViolations()

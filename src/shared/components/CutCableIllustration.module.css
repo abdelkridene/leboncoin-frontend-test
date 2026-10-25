@@ -1,0 +1,37 @@
+.illustration {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.cable {
+  stroke: var(--color-text-muted);
+  stroke-width: 12;
+}
+
+.cut {
+  fill: var(--color-border);
+}
+
+.wireOrange,
+.wireBlue,
+.wireGreen {
+  stroke-width: 3;
+}
+
+.wireOrange {
+  stroke: var(--color-primary);
+}
+
+.wireBlue {
+  stroke: var(--color-avatar-2);
+}
+
+.wireGreen {
+  stroke: var(--color-avatar-3);
+}
+
+.spark {
+  stroke: var(--color-brand);
+  stroke-width: 3;
+}

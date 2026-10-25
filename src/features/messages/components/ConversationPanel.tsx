@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { CutCableIllustration } from '@/shared/components/CutCableIllustration'
 import { EmptyState } from '@/shared/components/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState'
 import { useFocusOnMount } from '@/shared/hooks/useFocusOnMount'
@@ -22,7 +23,13 @@ export const ConversationPanel = ({ conversationId }: ConversationPanelProps) =>
 
   if (isPending) return <MessageListSkeleton />
   if (conversation === undefined) {
-    return <ErrorState description="Impossible de charger la conversation." onRetry={() => refetch()} />
+    return (
+      <ErrorState
+        illustration={<CutCableIllustration />}
+        description="Impossible de charger la conversation."
+        onRetry={() => refetch()}
+      />
+    )
   }
   if (!conversation) {
     return (

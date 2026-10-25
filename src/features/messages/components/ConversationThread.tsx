@@ -1,3 +1,4 @@
+import { CutCableIllustration } from '@/shared/components/CutCableIllustration'
 import { EmptyState } from '@/shared/components/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState'
 import { StaleDataNotice } from '@/shared/components/StaleDataNotice'
@@ -21,7 +22,15 @@ export const ConversationThread = ({ conversationId, loggedUserId, interlocutorN
 
   const renderMessages = () => {
     if (isPending) return <MessageListSkeleton />
-    if (!messages) return <ErrorState description="Impossible de charger les messages." onRetry={() => refetch()} />
+    if (!messages) {
+      return (
+        <ErrorState
+          illustration={<CutCableIllustration />}
+          description="Impossible de charger les messages."
+          onRetry={() => refetch()}
+        />
+      )
+    }
     if (messages.length === 0 && outgoingMessages.length === 0) {
       return <EmptyState title="Aucun message" description={`Envoyez le premier message à ${interlocutorName}.`} />
     }
