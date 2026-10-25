@@ -72,6 +72,7 @@ describe('ConversationThread', () => {
     expect(screen.getByText('Dernier prix ?')).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
+    expect(field()).toHaveFocus()
     await waitFor(() => expect(screen.queryByText(/Échec de l’envoi/)).not.toBeInTheDocument())
     expect(screen.getByText('Dernier prix ?')).toBeInTheDocument()
   })

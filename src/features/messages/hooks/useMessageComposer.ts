@@ -15,11 +15,13 @@ export const useMessageComposer = ({ onSend, canSend }: UseMessageComposerOption
   const canSubmit = validBody !== null && canSend
   const remainingCharacters = MAX_MESSAGE_LENGTH - draft.length
 
+  const focus = () => textareaRef.current?.focus()
+
   const submit = () => {
     if (!canSubmit) return
     onSend(validBody)
     setDraft('')
-    textareaRef.current?.focus()
+    focus()
   }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -42,5 +44,6 @@ export const useMessageComposer = ({ onSend, canSend }: UseMessageComposerOption
     isNearLimit: remainingCharacters <= LENGTH_WARNING_THRESHOLD,
     handleSubmit,
     handleKeyDown,
+    focus,
   }
 }

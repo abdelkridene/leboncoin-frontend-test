@@ -8,6 +8,12 @@ export const useConversationThread = (conversationId: number) => {
   // Nothing is sent into a conversation whose history is not on screen, and never two messages at once.
   const composer = useMessageComposer({ onSend: send, canSend: messages !== undefined && !isSending })
 
+  const retryMessage = (mutationId: number) => {
+    retry(mutationId)
+    // The retry button disappears with the failed message: the focus goes back where the user writes.
+    composer.focus()
+  }
+
   return {
     messages,
     isPending,
@@ -15,7 +21,7 @@ export const useConversationThread = (conversationId: number) => {
     reload: () => void refetch(),
     outgoingMessages,
     isSending,
-    retry,
+    retry: retryMessage,
     composer,
   }
 }
