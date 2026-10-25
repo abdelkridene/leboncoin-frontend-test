@@ -2,11 +2,7 @@ import Link from 'next/link'
 import { CutCableIllustration } from '@/shared/components/CutCableIllustration/CutCableIllustration'
 import { EmptyState } from '@/shared/components/EmptyState/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState/ErrorState'
-import { useFocusOnMount } from '@/shared/hooks/useFocusOnMount'
-import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
-import { useRememberViewedConversation } from '@/features/conversations/hooks/useConversationFocusRestoration'
-import { useConversation } from '@/features/conversations/hooks/useConversation'
-import { getInterlocutor } from '@/features/conversations/helpers/getInterlocutor'
+import { useConversationPanel } from '../../hooks/useConversationPanel'
 import { ConversationHeader } from '../ConversationHeader/ConversationHeader'
 import { ConversationThread } from '../ConversationThread/ConversationThread'
 import { MessageListSkeleton } from '../MessageListSkeleton/MessageListSkeleton'
@@ -16,22 +12,19 @@ interface ConversationPanelProps {
 }
 
 export const ConversationPanel = ({ conversationId }: ConversationPanelProps) => {
-  const loggedUserId = useLoggedUserId()
-  const { data: conversation, isPending, refetch } = useConversation(conversationId)
-  const headingRef = useFocusOnMount<HTMLHeadingElement>(Boolean(conversation))
-  useRememberViewedConversation(conversationId)
+  const panel = useConversationPanel(conversationId)
 
-  if (isPending) return <MessageListSkeleton />
-  if (conversation === undefined) {
+  if (panel.status === 'loading') return <MessageListSkeleton />
+  if (panel.status === 'error') {
     return (
       <ErrorState
         illustration={<CutCableIllustration />}
         description="Impossible de charger la conversation."
-        onRetry={() => refetch()}
+        onRetry={panel.reload}
       />
     )
   }
-  if (!conversation) {
+  if (panel.status === 'missing') {
     return (
       <EmptyState title="Conversation introuvable" description="Elle a peut-être été supprimée.">
         <Link href="/" className="text-link">
@@ -41,11 +34,14 @@ export const ConversationPanel = ({ conversationId }: ConversationPanelProps) =>
     )
   }
 
-  const interlocutorName = getInterlocutor(conversation, loggedUserId).nickname
   return (
     <>
-      <ConversationHeader interlocutorName={interlocutorName} headingRef={headingRef} />
-      <ConversationThread conversationId={conversationId} loggedUserId={loggedUserId} interlocutorName={interlocutorName} />
+      <ConversationHeader interlocutorName={panel.interlocutorName} headingRef={panel.headingRef} />
+      <ConversationThread
+        conversationId={conversationId}
+        loggedUserId={panel.loggedUserId}
+        interlocutorName={panel.interlocutorName}
+      />
     </>
   )
 }
