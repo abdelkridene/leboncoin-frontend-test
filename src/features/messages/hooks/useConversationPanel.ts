@@ -2,7 +2,7 @@ import type { Conversation } from '@/api/schemas'
 import { getInterlocutor } from '@/features/conversations/helpers/getInterlocutor'
 import { useConversation } from '@/features/conversations/hooks/useConversation'
 import { useRememberViewedConversation } from '@/features/conversations/hooks/useConversationFocusRestoration'
-import { useFocusOnMount } from '@/shared/hooks/useFocusOnMount'
+import { useFocusOnNavigation } from '@/shared/hooks/useFocusOnNavigation'
 import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
 
 type PanelContent =
@@ -25,7 +25,7 @@ const describeContent = (
 export const useConversationPanel = (conversationId: number) => {
   const loggedUserId = useLoggedUserId()
   const { data: conversation, isPending, refetch } = useConversation(conversationId)
-  const headingRef = useFocusOnMount<HTMLHeadingElement>(Boolean(conversation))
+  const headingRef = useFocusOnNavigation<HTMLHeadingElement>(Boolean(conversation))
   useRememberViewedConversation(conversationId)
 
   return {
