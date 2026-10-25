@@ -9,7 +9,7 @@ import { conversationsQuery } from './conversationsQuery'
 const NO_CONVERSATIONS: Conversation[] = []
 
 // The mock API never lists conversations created after it started, so they are kept client side until it does.
-export const useCreatedConversations = (userId: number) =>
+const useCreatedConversations = (userId: number) =>
   useQuery<Conversation[]>({ queryKey: queryKeys.createdConversations(userId), queryFn: skipToken }).data ??
   NO_CONVERSATIONS
 
