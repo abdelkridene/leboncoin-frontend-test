@@ -6,6 +6,7 @@ import { useConversationThread } from '../../hooks/useConversationThread'
 import { MessageComposer } from '../MessageComposer/MessageComposer'
 import { MessageList } from '../MessageList/MessageList'
 import { MessageListSkeleton } from '../MessageListSkeleton/MessageListSkeleton'
+import styles from './ConversationThread.module.css'
 
 interface ConversationThreadProps {
   conversationId: number
@@ -46,7 +47,7 @@ export const ConversationThread = ({ conversationId, loggedUserId, interlocutorN
   return (
     <>
       {isError && messages && <StaleDataNotice onRetry={reload} />}
-      {renderMessages()}
+      <div className={styles.thread}>{renderMessages()}</div>
       <MessageComposer
         draft={composer.draft}
         onDraftChange={composer.setDraft}
