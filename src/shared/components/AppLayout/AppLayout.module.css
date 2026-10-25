@@ -28,8 +28,8 @@
   flex-direction: column;
 }
 
-.showList .detail,
-.showDetail .sidebar {
+.main[data-active-panel='list'] .detail,
+.main[data-active-panel='detail'] .sidebar {
   display: none;
 }
 
@@ -51,11 +51,11 @@
     overflow-y: auto;
   }
 
-  .showList .detail {
+  .main[data-active-panel='list'] .detail {
     display: flex;
   }
 
-  .showDetail .sidebar {
+  .main[data-active-panel='detail'] .sidebar {
     display: block;
   }
 }

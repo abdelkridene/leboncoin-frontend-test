@@ -19,12 +19,12 @@ describe('AppLayout', () => {
 
   it('flags which panel is visible on small screens', () => {
     renderLayout('list')
-    expect(screen.getByRole('main')).toHaveClass('showList')
+    expect(screen.getByRole('main')).toHaveAttribute('data-active-panel', 'list')
   })
 
   it('flags the detail panel', () => {
     renderLayout('detail')
-    expect(screen.getByRole('main')).toHaveClass('showDetail')
+    expect(screen.getByRole('main')).toHaveAttribute('data-active-panel', 'detail')
   })
 
   it('has no accessibility violations', async () => {

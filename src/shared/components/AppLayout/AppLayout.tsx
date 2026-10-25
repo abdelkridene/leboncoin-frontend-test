@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { cn } from '@/shared/helpers/cn'
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary'
 import { MAIN_CONTENT_ID } from '../SkipLink/SkipLink'
 import styles from './AppLayout.module.css'
@@ -13,11 +12,7 @@ interface AppLayoutProps {
 }
 
 export const AppLayout = ({ sidebar, children, activePanel }: AppLayoutProps) => (
-  <main
-    id={MAIN_CONTENT_ID}
-    tabIndex={-1}
-    className={cn(styles.main, activePanel === 'list' ? styles.showList : styles.showDetail)}
-  >
+  <main id={MAIN_CONTENT_ID} tabIndex={-1} data-active-panel={activePanel} className={styles.main}>
     <nav aria-label="Conversations" className={styles.sidebar}>
       <ErrorBoundary>{sidebar}</ErrorBoundary>
     </nav>
