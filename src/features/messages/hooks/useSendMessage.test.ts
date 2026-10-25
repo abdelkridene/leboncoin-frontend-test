@@ -15,6 +15,8 @@ const setup = () => {
 }
 
 describe('useSendMessage', () => {
+  afterEach(() => jest.useRealTimers())
+
   it('shows the message as pending, then appends it to the conversation', async () => {
     let release: () => void = () => undefined
     server.use(
@@ -60,6 +62,46 @@ describe('useSendMessage', () => {
     act(() => result.current.retry(result.current.outgoingMessages[0].mutationId))
     await waitFor(() => expect(result.current.outgoingMessages).toHaveLength(0))
     expect(queryClient.getQueryData<typeof messages>(queryKeys.messages(1))?.at(-1)?.body).toBe('Salut')
+  })
+
+  it('keeps failed messages long after the cache would normally forget them', async () => {
+    jest.useFakeTimers({ doNotFake: ['nextTick', 'queueMicrotask', 'setImmediate'] })
+    server.use(http.post(apiUrl('/messages/1'), () => new HttpResponse(null, { status: 503 })))
+    const { result } = setup()
+
+    act(() => result.current.send('Premier'))
+    await waitFor(() => expect(result.current.outgoingMessages[0]?.status).toBe('failed'))
+    act(() => result.current.send('Second'))
+    await waitFor(() => expect(result.current.outgoingMessages[1]?.status).toBe('failed'))
+
+    await act(() => jest.advanceTimersByTimeAsync(60 * 60_000))
+    expect(result.current.outgoingMessages.map(({ body }) => body)).toEqual(['Premier', 'Second'])
+  })
+
+  it('forgets delivered messages so the mutation cache does not grow', async () => {
+    const { result, queryClient } = setup()
+    act(() => result.current.send('Salut'))
+    await waitFor(() => expect(queryClient.getMutationCache().getAll()).toHaveLength(0))
+  })
+
+  it('stamps a retried message with the time it is sent again', async () => {
+    jest.useFakeTimers({ now: new Date('2021-07-07T10:00:00Z'), doNotFake: ['nextTick', 'queueMicrotask', 'setImmediate'] })
+    const postedTimestamps: number[] = []
+    server.use(
+      http.post(apiUrl('/messages/1'), async ({ request }) => {
+        postedTimestamps.push(((await request.json()) as { timestamp: number }).timestamp)
+        return postedTimestamps.length === 1 ? new HttpResponse(null, { status: 503 }) : HttpResponse.json({ id: 60 })
+      }),
+    )
+    const { result } = setup()
+
+    act(() => result.current.send('Salut'))
+    await waitFor(() => expect(result.current.outgoingMessages[0]?.status).toBe('failed'))
+    await act(() => jest.advanceTimersByTimeAsync(90_000))
+    act(() => result.current.retry(result.current.outgoingMessages[0].mutationId))
+
+    await waitFor(() => expect(postedTimestamps).toHaveLength(2))
+    expect(postedTimestamps[1] - postedTimestamps[0]).toBe(90)
   })
 
   it('ignores retries of unknown messages', () => {

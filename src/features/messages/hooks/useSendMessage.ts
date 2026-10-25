@@ -12,9 +12,11 @@ export interface OutgoingMessage extends NewMessage {
   status: OutgoingStatus
 }
 
+// Variables are always the NewMessage built by `send` or `retry` below.
+const getVariables = (mutation: Mutation<unknown, Error, unknown>) => mutation.state.variables as NewMessage
+
 const toOutgoingMessage = (mutation: Mutation<unknown, Error, unknown>): OutgoingMessage => ({
-  // Variables are always the NewMessage built by `send` below.
-  ...(mutation.state.variables as NewMessage),
+  ...getVariables(mutation),
   mutationId: mutation.mutationId,
   status: mutation.state.status === 'error' ? 'failed' : 'pending',
 })
@@ -27,9 +29,11 @@ export const useSendMessage = (conversationId: number) => {
   const authorId = useLoggedUserId()
   const mutationKey = queryKeys.sendMessage(conversationId)
 
-  const { mutate } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationKey,
     mutationFn: sendMessage,
+    // The default 5 minutes would garbage collect failed messages once unobserved: they must wait for a retry.
+    gcTime: Infinity,
     onSuccess: (message) => {
       queryClient.setQueryData<Message[]>(queryKeys.messages(conversationId), (messages = []) => [...messages, message])
       // Prefix match: updates both the server list and the conversations created locally.
@@ -43,15 +47,30 @@ export const useSendMessage = (conversationId: number) => {
 
   const outgoingMessages = useMutationState({ filters: { mutationKey, predicate: isUnsent }, select: toOutgoingMessage })
 
-  const send = (body: string) =>
-    mutate({ conversationId, authorId, body, timestamp: toTimestampInSeconds(new Date()) })
+  const forgetDeliveredMessages = () => {
+    const mutationCache = queryClient.getMutationCache()
+    mutationCache.findAll({ mutationKey, status: 'success' }).forEach((mutation) => mutationCache.remove(mutation))
+  }
+
+  const deliver = async (message: NewMessage) => {
+    try {
+      await mutateAsync(message)
+      forgetDeliveredMessages()
+    } catch {
+      // The failed mutation stays in the cache, where the conversation shows it with a retry action.
+    }
+  }
+
+  const send = (body: string) => {
+    void deliver({ conversationId, authorId, body, timestamp: toTimestampInSeconds(new Date()) })
+  }
 
   const retry = (mutationId: number) => {
     const mutationCache = queryClient.getMutationCache()
     const failed = mutationCache.getAll().find((mutation) => mutation.mutationId === mutationId)
     if (!failed) return
     mutationCache.remove(failed)
-    mutate(failed.state.variables as NewMessage)
+    void deliver({ ...getVariables(failed), timestamp: toTimestampInSeconds(new Date()) })
   }
 
   return {
