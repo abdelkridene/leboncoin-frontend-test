@@ -5,7 +5,8 @@ import { useSendMessage } from './useSendMessage'
 export const useConversationThread = (conversationId: number) => {
   const { data: messages, isPending, isError, refetch } = useMessages(conversationId)
   const { outgoingMessages, send, retry, isSending } = useSendMessage(conversationId)
-  const composer = useMessageComposer({ onSend: send, isSending })
+  // Nothing is sent into a conversation whose history is not on screen, and never two messages at once.
+  const composer = useMessageComposer({ onSend: send, canSend: messages !== undefined && !isSending })
 
   return {
     messages,

@@ -93,6 +93,28 @@ describe('ConversationThread', () => {
     expect(await screen.findByRole('log')).toBeInTheDocument()
   })
 
+  it('keeps the draft but blocks sending while the history is unavailable', async () => {
+    let postCount = 0
+    server.use(
+      http.get(apiUrl('/messages/:conversationId'), () => new HttpResponse(null, { status: 503 }), { once: true }),
+      http.post(apiUrl('/messages/1'), () => {
+        postCount += 1
+        return HttpResponse.json({ id: 90 })
+      }),
+    )
+    renderThread()
+    await screen.findByRole('alert')
+
+    await userEvent.type(field(), 'Toujours dispo ?{Enter}')
+    expect(field()).toHaveValue('Toujours dispo ?')
+    expect(screen.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
+    expect(postCount).toBe(0)
+
+    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
+    await screen.findByRole('log')
+    expect(screen.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
+  })
+
   it('keeps showing cached messages when a refresh fails', async () => {
     server.use(http.get(apiUrl('/messages/:conversationId'), () => new HttpResponse(null, { status: 503 }), { once: true }))
     const queryClient = createTestQueryClient()

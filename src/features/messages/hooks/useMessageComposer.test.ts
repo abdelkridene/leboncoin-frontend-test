@@ -12,9 +12,9 @@ const keyEvent = (key: string, options: { shiftKey?: boolean; isComposing?: bool
     preventDefault: jest.fn(),
   }) as unknown as KeyboardEvent<HTMLTextAreaElement>
 
-const setup = (isSending = false) => {
+const setup = (canSend = true) => {
   const onSend = jest.fn()
-  const hook = renderHook(() => useMessageComposer({ onSend, isSending }))
+  const hook = renderHook(() => useMessageComposer({ onSend, canSend }))
   return { onSend, ...hook }
 }
 
@@ -39,8 +39,8 @@ describe('useMessageComposer', () => {
     expect(onSend).not.toHaveBeenCalled()
   })
 
-  it('refuses to send while a message is being sent', () => {
-    const { result, onSend } = setup(true)
+  it('refuses to send when sending is not allowed', () => {
+    const { result, onSend } = setup(false)
     act(() => result.current.setDraft('Bonjour'))
     act(() => result.current.handleSubmit(submitEvent()))
     expect(onSend).not.toHaveBeenCalled()

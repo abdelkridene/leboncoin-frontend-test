@@ -5,14 +5,14 @@ const LENGTH_WARNING_THRESHOLD = 100
 
 interface UseMessageComposerOptions {
   onSend: (body: string) => void
-  isSending: boolean
+  canSend: boolean
 }
 
-export const useMessageComposer = ({ onSend, isSending }: UseMessageComposerOptions) => {
+export const useMessageComposer = ({ onSend, canSend }: UseMessageComposerOptions) => {
   const [draft, setDraft] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const validBody = validateMessageBody(draft)
-  const canSubmit = validBody !== null && !isSending
+  const canSubmit = validBody !== null && canSend
   const remainingCharacters = MAX_MESSAGE_LENGTH - draft.length
 
   const submit = () => {
