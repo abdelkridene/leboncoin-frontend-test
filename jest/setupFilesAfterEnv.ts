@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import { toHaveNoViolations } from 'jest-axe'
+import { resetDatabase } from '../src/test/handlers'
 import { server } from '../src/test/server'
 
 expect.extend(toHaveNoViolations)
@@ -44,6 +45,7 @@ HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
 afterEach(() => {
   server.resetHandlers()
+  resetDatabase()
   jest.clearAllMocks()
 })
 afterAll(() => server.close())

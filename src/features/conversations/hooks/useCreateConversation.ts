@@ -28,6 +28,7 @@ export const useCreateConversation = () => {
         ...created,
         conversation,
       ])
+      void queryClient.invalidateQueries({ queryKey: queryKeys.conversations(conversation.senderId), exact: true })
     },
   })
 

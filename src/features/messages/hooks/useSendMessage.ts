@@ -35,13 +35,15 @@ export const useSendMessage = (conversationId: number) => {
     // The default 5 minutes would garbage collect failed messages once unobserved: they must wait for a retry.
     gcTime: Infinity,
     onSuccess: (message) => {
-      queryClient.setQueryData<Message[]>(queryKeys.messages(conversationId), (messages = []) => [...messages, message])
+      // Appended only to a history that was loaded: a lone message must never pass for the whole conversation.
+      queryClient.setQueryData<Message[]>(queryKeys.messages(conversationId), (messages) => messages && [...messages, message])
       // Prefix match: updates both the server list and the conversations created locally.
       queryClient.setQueriesData<Conversation[]>({ queryKey: queryKeys.conversations(authorId) }, (conversations) =>
         conversations?.map((conversation) =>
           conversation.id === conversationId ? { ...conversation, lastMessageTimestamp: message.timestamp } : conversation,
         ),
       )
+      void queryClient.invalidateQueries({ queryKey: queryKeys.messages(conversationId) })
     },
   })
 

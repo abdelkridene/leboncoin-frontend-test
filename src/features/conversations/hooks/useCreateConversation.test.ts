@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw'
 import { useRouter } from 'next/router'
 import { server } from '@/test/server'
 import { apiUrl } from '@/test/handlers'
-import { users } from '@/test/fixtures'
+import { conversations, users } from '@/test/fixtures'
 import { renderHookWithProviders } from '@/test/renderWithProviders'
 import { queryKeys } from '@/api/queryKeys'
 import { useCreateConversation } from './useCreateConversation'
@@ -28,6 +28,17 @@ describe('useCreateConversation', () => {
     expect(body).toMatchObject({ senderId: 1, senderNickname: 'Thibaut', recipientId: 4, recipientNickname: 'Elodie' })
     expect(queryClient.getQueryData(queryKeys.createdConversations(1))).toEqual([expect.objectContaining({ id: 42 })])
     expect(useRouter().push).toHaveBeenCalledWith('/conversations/42')
+  })
+
+  it('refreshes the conversations list once the conversation exists', async () => {
+    const onCreated = jest.fn()
+    const { result, queryClient } = renderHookWithProviders(() => useCreateConversation())
+    queryClient.setQueryData(queryKeys.conversations(1), conversations)
+
+    act(() => result.current.create({ sender: me, recipient: elodie }, onCreated))
+
+    await waitFor(() => expect(onCreated).toHaveBeenCalled())
+    expect(queryClient.getQueryState(queryKeys.conversations(1))?.isInvalidated).toBe(true)
   })
 
   it('reports failures without navigating', async () => {

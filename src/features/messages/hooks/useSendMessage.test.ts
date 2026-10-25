@@ -110,10 +110,17 @@ describe('useSendMessage', () => {
     expect(result.current.outgoingMessages).toHaveLength(0)
   })
 
-  it('creates the messages cache when it was empty and ignores a missing conversations cache', async () => {
+  it('never invents a history that was not loaded', async () => {
     const { result, queryClient } = renderHookWithProviders(() => useSendMessage(3))
     act(() => result.current.send('Premier message'))
-    await waitFor(() => expect(queryClient.getQueryData(queryKeys.messages(3))).toHaveLength(1))
+    await waitFor(() => expect(result.current.outgoingMessages).toHaveLength(0))
+    expect(queryClient.getQueryData(queryKeys.messages(3))).toBeUndefined()
     expect(queryClient.getQueryData(queryKeys.conversations(1))).toBeUndefined()
+  })
+
+  it('invalidates the conversation once delivered, so the server copy wins', async () => {
+    const { result, queryClient } = setup()
+    act(() => result.current.send('Salut'))
+    await waitFor(() => expect(queryClient.getQueryState(queryKeys.messages(1))?.isInvalidated).toBe(true))
   })
 })
