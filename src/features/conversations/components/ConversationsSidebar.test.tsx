@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { axe } from 'jest-axe'
@@ -31,13 +31,25 @@ describe('ConversationsSidebar', () => {
     expect(await screen.findByText('Aucune conversation')).toBeInTheDocument()
   })
 
-  it('shows a friendly error and recovers on retry', async () => {
+  it('shows a friendly error and recovers on retry on mobile', async () => {
     server.use(http.get(apiUrl('/conversations/:userId'), () => new HttpResponse(null, { status: 503 }), { once: true }))
+    const restore = mockMobileViewport()
     renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Impossible de charger vos conversations.')
     await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }))
     expect(await screen.findAllByRole('link')).toHaveLength(3)
+    restore()
+  })
+
+  it('leaves the error to the detail panel on desktop', async () => {
+    server.use(http.get(apiUrl('/conversations/:userId'), () => new HttpResponse(null, { status: 503 }), { once: true }))
+    renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
+
+    await waitForElementToBeRemoved(() => screen.queryByRole('status'))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Mes conversations' })).toBeInTheDocument()
   })
 
   it('gives the focus back to the conversation the user returns from on mobile', async () => {

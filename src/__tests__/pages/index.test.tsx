@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { axe } from 'jest-axe'
 import type { GetServerSidePropsContext } from 'next'
@@ -20,6 +20,15 @@ describe('Home page', () => {
     renderWithProviders(<Home />)
     expect(screen.getByText('Sélectionnez une conversation')).toBeInTheDocument()
     expect(await screen.findAllByRole('link', { name: /Jeremie|Patrick|Elodie/ })).toHaveLength(3)
+  })
+
+  it('reports a conversations failure in the detail panel only', async () => {
+    server.use(http.get(apiUrl('/conversations/:userId'), () => new HttpResponse(null, { status: 503 }), { once: true }))
+    renderWithProviders(<Home />)
+
+    const detail = screen.getByRole('region', { name: 'Conversation' })
+    expect(await within(detail).findByRole('alert')).toHaveTextContent('Impossible de charger vos conversations.')
+    expect(within(screen.getByRole('navigation', { name: 'Conversations' })).queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('has no accessibility violations', async () => {

@@ -19,10 +19,13 @@ const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) =
   const loggedUserId = useLoggedUserId()
   const { data: conversations, isPending, isError, refetch } = useConversations()
   const prefetchMessages = usePrefetchMessages()
-  const listRef = useRestoreConversationFocus<HTMLUListElement>(useIsMobile() && conversations !== undefined)
+  const isMobile = useIsMobile()
+  const listRef = useRestoreConversationFocus<HTMLUListElement>(isMobile && conversations !== undefined)
 
   if (isPending) return <ConversationListSkeleton />
   if (!conversations) {
+    // On desktop the detail panel reports the failure, so the list stays empty rather than repeating it.
+    if (!isMobile) return null
     return <ErrorState description="Impossible de charger vos conversations." onRetry={() => refetch()} />
   }
   return (
