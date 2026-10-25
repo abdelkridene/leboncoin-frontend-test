@@ -21,5 +21,7 @@ export const prefetchForPage = async (
 
   const queryClient = createServerQueryClient()
   await prefetchWithinBudget(prefetch(queryClient))
+  // What missed the budget is fetched by the browser: the server stops waiting for it instead of holding a request open.
+  await queryClient.cancelQueries()
   return { dehydratedState: dehydrate(queryClient), queryClient }
 }
