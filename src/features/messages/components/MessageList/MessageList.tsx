@@ -29,6 +29,8 @@ export const MessageList = ({
       role="log"
       aria-live="polite"
       aria-label={`Messages avec ${interlocutorName}`}
+      // Focusable so that keyboard users can scroll a long history in every browser, not only in Chrome.
+      tabIndex={0}
       className={styles.container}
     >
       <ul className={styles.list}>

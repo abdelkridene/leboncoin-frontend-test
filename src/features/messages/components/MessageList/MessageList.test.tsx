@@ -31,6 +31,7 @@ describe('MessageList', () => {
     renderList()
     const log = screen.getByRole('log', { name: 'Messages avec Jeremie' })
     expect(log).toHaveAttribute('aria-live', 'polite')
+    expect(log).toHaveAttribute('tabindex', '0')
 
     const items = within(log).getAllByRole('listitem')
     expect(items).toHaveLength(2)
