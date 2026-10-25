@@ -8,7 +8,7 @@
 
 .mine,
 .theirs {
-  width: 55%;
+  width: var(--size-skeleton-bubble);
 }
 
 .mine {

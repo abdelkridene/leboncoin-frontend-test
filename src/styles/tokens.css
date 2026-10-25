@@ -14,6 +14,7 @@
   --color-danger-surface: #fdecea;
   --color-warning-surface: #fff4e5;
   --color-focus: #1a1a1a;
+  --color-backdrop: rgba(26, 26, 26, 0.5);
   --color-avatar-1: #c8490c;
   --color-avatar-2: #1f65a8;
   --color-avatar-3: #2e7d32;
@@ -48,14 +49,29 @@
   --shadow-sm: 0 1px 2px rgba(26, 26, 26, 0.08);
   --shadow-md: 0 2px 8px rgba(26, 26, 26, 0.1);
 
+  --border-width-thin: 1px;
+  --border-width-thick: 2px;
+
+  --opacity-disabled: 0.6;
+  --opacity-pending: 0.7;
+
   --size-touch-target: 2.75rem;
   --size-avatar: 2.75rem;
   --size-sidebar: 22rem;
   --size-header: 4rem;
   --size-content-max: 80rem;
   --size-bubble-max: 75%;
+  --size-dialog: 28rem;
+  --size-readable-text: 28rem;
+  --size-composer-max-height: 8rem;
+  --size-skeleton-bubble: 55%;
+  --size-skeleton-name: 60%;
+  --size-skeleton-date: 30%;
   --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
 
   --duration-fast: 150ms;
+  --duration-shimmer: 1.4s;
+
+  --z-index-skip-link: 10;
 }
