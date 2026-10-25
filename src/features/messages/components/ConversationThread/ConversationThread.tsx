@@ -55,8 +55,8 @@ export const ConversationThread = ({ conversationId, loggedUserId, interlocutorN
         onKeyDown={composer.handleKeyDown}
         textareaRef={composer.textareaRef}
         canSubmit={composer.canSubmit}
-        remainingCharacters={composer.remainingCharacters}
-        isNearLimit={composer.isNearLimit}
+        remainingCharactersLabel={composer.remainingCharactersLabel}
+        remainingCharactersAnnouncement={composer.remainingCharactersAnnouncement}
         recipientName={interlocutorName}
       />
     </>

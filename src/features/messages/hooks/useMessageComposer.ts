@@ -1,7 +1,13 @@
 import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useDebouncedValue } from '@/shared/hooks/useDebouncedValue'
+import { formatRemainingCharacters } from '../helpers/formatRemainingCharacters'
 import { MAX_MESSAGE_LENGTH, validateMessageBody } from '../helpers/validateMessageBody'
 
 const LENGTH_WARNING_THRESHOLD = 100
+const ANNOUNCEMENT_DELAY_MS = 1000
+
+const describeRemainingCharacters = (count: number) =>
+  count <= LENGTH_WARNING_THRESHOLD ? formatRemainingCharacters(count) : null
 
 interface UseMessageComposerOptions {
   onSend: (body: string) => void
@@ -14,6 +20,8 @@ export const useMessageComposer = ({ onSend, canSend }: UseMessageComposerOption
   const validBody = validateMessageBody(draft)
   const canSubmit = validBody !== null && canSend
   const remainingCharacters = MAX_MESSAGE_LENGTH - draft.length
+  // Screen readers hear the count once typing pauses, rather than on every keystroke.
+  const announcedRemainingCharacters = useDebouncedValue(remainingCharacters, ANNOUNCEMENT_DELAY_MS)
 
   const focus = () => textareaRef.current?.focus()
 
@@ -40,8 +48,8 @@ export const useMessageComposer = ({ onSend, canSend }: UseMessageComposerOption
     setDraft,
     textareaRef,
     canSubmit,
-    remainingCharacters,
-    isNearLimit: remainingCharacters <= LENGTH_WARNING_THRESHOLD,
+    remainingCharactersLabel: describeRemainingCharacters(remainingCharacters),
+    remainingCharactersAnnouncement: describeRemainingCharacters(announcedRemainingCharacters) ?? '',
     handleSubmit,
     handleKeyDown,
     focus,

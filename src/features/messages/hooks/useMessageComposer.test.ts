@@ -19,6 +19,8 @@ const setup = (canSend = true) => {
 }
 
 describe('useMessageComposer', () => {
+  afterEach(() => jest.useRealTimers())
+
   it('sends the trimmed draft and clears it', () => {
     const { result, onSend } = setup()
     act(() => result.current.setDraft('  Bonjour  '))
@@ -62,13 +64,21 @@ describe('useMessageComposer', () => {
     expect(onSend).toHaveBeenCalledWith('Bonjour')
   })
 
-  it('counts the remaining characters and flags the approach of the limit', () => {
+  it('shows the remaining characters only near the limit', () => {
     const { result } = setup()
-    expect(result.current.remainingCharacters).toBe(1000)
-    expect(result.current.isNearLimit).toBe(false)
+    expect(result.current.remainingCharactersLabel).toBeNull()
 
+    act(() => result.current.setDraft('a'.repeat(999)))
+    expect(result.current.remainingCharactersLabel).toBe('1 caractère restant')
+  })
+
+  it('announces the remaining characters once typing pauses', () => {
+    jest.useFakeTimers()
+    const { result } = setup()
     act(() => result.current.setDraft('a'.repeat(950)))
-    expect(result.current.remainingCharacters).toBe(50)
-    expect(result.current.isNearLimit).toBe(true)
+    expect(result.current.remainingCharactersAnnouncement).toBe('')
+
+    act(() => jest.advanceTimersByTime(1000))
+    expect(result.current.remainingCharactersAnnouncement).toBe('50 caractères restants')
   })
 })

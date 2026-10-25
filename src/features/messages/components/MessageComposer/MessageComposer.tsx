@@ -1,6 +1,5 @@
 import type { FormEvent, KeyboardEvent, RefObject } from 'react'
 import { Button } from '@/shared/components/Button/Button'
-import { cn } from '@/shared/helpers/cn'
 import { MAX_MESSAGE_LENGTH } from '../../helpers/validateMessageBody'
 import styles from './MessageComposer.module.css'
 
@@ -11,8 +10,8 @@ interface MessageComposerProps {
   onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void
   textareaRef: RefObject<HTMLTextAreaElement | null>
   canSubmit: boolean
-  remainingCharacters: number
-  isNearLimit: boolean
+  remainingCharactersLabel: string | null
+  remainingCharactersAnnouncement: string
   recipientName: string
 }
 
@@ -23,8 +22,8 @@ export const MessageComposer = ({
   onKeyDown,
   textareaRef,
   canSubmit,
-  remainingCharacters,
-  isNearLimit,
+  remainingCharactersLabel,
+  remainingCharactersAnnouncement,
   recipientName,
 }: MessageComposerProps) => (
   <form className={styles.form} onSubmit={onSubmit}>
@@ -41,10 +40,18 @@ export const MessageComposer = ({
       maxLength={MAX_MESSAGE_LENGTH}
       rows={1}
       placeholder="Écrire un message"
-      aria-describedby="message-composer-counter"
+      aria-describedby="message-composer-hint"
     />
-    <p id="message-composer-counter" aria-live="polite" className={cn(styles.counter, !isNearLimit && 'visually-hidden')}>
-      {isNearLimit ? `${remainingCharacters} caractères restants` : `${MAX_MESSAGE_LENGTH} caractères maximum`}
+    <p id="message-composer-hint" className="visually-hidden">
+      {MAX_MESSAGE_LENGTH} caractères maximum
+    </p>
+    {remainingCharactersLabel && (
+      <p aria-hidden="true" className={styles.counter}>
+        {remainingCharactersLabel}
+      </p>
+    )}
+    <p aria-live="polite" className="visually-hidden">
+      {remainingCharactersAnnouncement}
     </p>
     <Button type="submit" disabled={!canSubmit} className={styles.send}>
       Envoyer

@@ -12,18 +12,18 @@ const renderComposer = (overrides: Partial<Parameters<typeof MessageComposer>[0]
     onKeyDown: jest.fn(),
     textareaRef: createRef<HTMLTextAreaElement>(),
     canSubmit: true,
-    remainingCharacters: 1000,
-    isNearLimit: false,
+    remainingCharactersLabel: null,
+    remainingCharactersAnnouncement: '',
     recipientName: 'Jeremie',
     ...overrides,
   }
-  render(<MessageComposer {...props} />)
-  return props
+  const view = render(<MessageComposer {...props} />)
+  return { props, ...view }
 }
 
 describe('MessageComposer', () => {
   it('exposes a labelled, length limited field', async () => {
-    const props = renderComposer()
+    const { props } = renderComposer()
     const field = screen.getByRole('textbox', { name: 'Message à Jeremie' })
     expect(field).toHaveAttribute('maxLength', '1000')
     expect(field).toHaveAccessibleDescription('1000 caractères maximum')
@@ -34,7 +34,7 @@ describe('MessageComposer', () => {
   })
 
   it('submits the form', async () => {
-    const props = renderComposer()
+    const { props } = renderComposer()
     await userEvent.click(screen.getByRole('button', { name: 'Envoyer' }))
     expect(props.onSubmit).toHaveBeenCalledTimes(1)
   })
@@ -44,25 +44,17 @@ describe('MessageComposer', () => {
     expect(screen.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
   })
 
-  it('announces the remaining characters near the limit', () => {
-    renderComposer({ isNearLimit: true, remainingCharacters: 12 })
-    expect(screen.getByText('12 caractères restants')).toHaveAttribute('aria-live', 'polite')
+  it('shows the counter to sighted users and announces it through a polite live region', () => {
+    const { container } = renderComposer({
+      remainingCharactersLabel: '12 caractères restants',
+      remainingCharactersAnnouncement: '15 caractères restants',
+    })
+    expect(screen.getByText('12 caractères restants')).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelector('[aria-live="polite"]')).toHaveTextContent('15 caractères restants')
   })
 
   it('has no accessibility violations', async () => {
-    const { container } = render(
-      <MessageComposer
-        draft=""
-        onDraftChange={jest.fn()}
-        onSubmit={jest.fn()}
-        onKeyDown={jest.fn()}
-        textareaRef={createRef()}
-        canSubmit={false}
-        remainingCharacters={1000}
-        isNearLimit={false}
-        recipientName="Jeremie"
-      />,
-    )
+    const { container } = renderComposer({ canSubmit: false, remainingCharactersLabel: '12 caractères restants' })
     expect(await axe(container)).toHaveNoViolations()
   })
 })
