@@ -1,6 +1,6 @@
 import type { Ref } from 'react'
 import Link from 'next/link'
-import { Avatar } from '@/shared/components/Avatar'
+import { Avatar } from '@/shared/components/Avatar/Avatar'
 import styles from './ConversationHeader.module.css'
 
 interface ConversationHeaderProps {

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Avatar } from '@/shared/components/Avatar'
+import { Avatar } from '@/shared/components/Avatar/Avatar'
 import { cn } from '@/shared/helpers/cn'
 import { formatConversationDate, toIsoString } from '@/shared/helpers/formatDate'
 import styles from './ConversationListItem.module.css'

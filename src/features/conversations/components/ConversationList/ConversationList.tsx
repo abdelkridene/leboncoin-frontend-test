@@ -1,7 +1,7 @@
 import type { Ref } from 'react'
 import type { Conversation } from '@/api/schemas'
-import { getInterlocutor } from '../helpers/getInterlocutor'
-import { ConversationListItem } from './ConversationListItem'
+import { getInterlocutor } from '../../helpers/getInterlocutor'
+import { ConversationListItem } from '../ConversationListItem/ConversationListItem'
 import styles from './ConversationList.module.css'
 
 interface ConversationListProps {

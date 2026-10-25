@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/router'
-import { Button } from '@/shared/components/Button'
+import { Button } from '@/shared/components/Button/Button'
 import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
-import { getRecipientOptions, type RecipientOption } from '../helpers/getRecipientOptions'
-import { useConversations } from '../hooks/useConversations'
-import { useCreateConversation } from '../hooks/useCreateConversation'
-import { useUsers } from '../hooks/useUsers'
-import { NewConversationDialog, type RecipientsStatus } from './NewConversationDialog'
+import { getRecipientOptions, type RecipientOption } from '../../helpers/getRecipientOptions'
+import { useConversations } from '../../hooks/useConversations'
+import { useCreateConversation } from '../../hooks/useCreateConversation'
+import { useUsers } from '../../hooks/useUsers'
+import { NewConversationDialog, type RecipientsStatus } from '../NewConversationDialog/NewConversationDialog'
 
 export const NewConversationButton = () => {
   const [isOpen, setIsOpen] = useState(false)

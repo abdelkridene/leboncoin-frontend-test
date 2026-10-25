@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
-import { EmptyState } from '@/shared/components/EmptyState'
-import { MAIN_CONTENT_ID } from '@/shared/components/SkipLink'
+import { EmptyState } from '@/shared/components/EmptyState/EmptyState'
+import { MAIN_CONTENT_ID } from '@/shared/components/SkipLink/SkipLink'
 import styles from './404.module.css'
 
 export default function NotFoundPage(): ReactElement {

@@ -2,10 +2,10 @@ import type { ReactElement } from 'react'
 import type { GetServerSideProps } from 'next'
 import Head from 'next/head'
 import { prefetchForPage, type PrefetchedProps } from '@/api/serverPrefetch'
-import { ConversationsSidebar } from '@/features/conversations/components/ConversationsSidebar'
-import { NoConversationSelected } from '@/features/conversations/components/NoConversationSelected'
+import { ConversationsSidebar } from '@/features/conversations/components/ConversationsSidebar/ConversationsSidebar'
+import { NoConversationSelected } from '@/features/conversations/components/NoConversationSelected/NoConversationSelected'
 import { conversationsQuery } from '@/features/conversations/hooks/conversationsQuery'
-import { AppLayout } from '@/shared/components/AppLayout'
+import { AppLayout } from '@/shared/components/AppLayout/AppLayout'
 import { getLoggedUserId } from '@/utils/getLoggedUserId'
 
 export const getServerSideProps: GetServerSideProps<PrefetchedProps> = async ({ req }) => ({

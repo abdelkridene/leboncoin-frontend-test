@@ -1,4 +1,4 @@
-import { Skeleton } from '@/shared/components/Skeleton'
+import { Skeleton } from '@/shared/components/Skeleton/Skeleton'
 import styles from './MessageListSkeleton.module.css'
 
 const PLACEHOLDER_ALIGNMENTS = ['theirs', 'mine', 'theirs', 'mine'] as const

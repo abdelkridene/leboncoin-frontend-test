@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/shared/helpers/cn'
-import { ErrorBoundary } from './ErrorBoundary'
-import { MAIN_CONTENT_ID } from './SkipLink'
+import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary'
+import { MAIN_CONTENT_ID } from '../SkipLink/SkipLink'
 import styles from './AppLayout.module.css'
 
 export type ActivePanel = 'list' | 'detail'

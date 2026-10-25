@@ -1,13 +1,13 @@
-import { CutCableIllustration } from '@/shared/components/CutCableIllustration'
-import { EmptyState } from '@/shared/components/EmptyState'
-import { ErrorState } from '@/shared/components/ErrorState'
-import { StaleDataNotice } from '@/shared/components/StaleDataNotice'
-import { useMessageComposer } from '../hooks/useMessageComposer'
-import { useMessages } from '../hooks/useMessages'
-import { useSendMessage } from '../hooks/useSendMessage'
-import { MessageComposer } from './MessageComposer'
-import { MessageList } from './MessageList'
-import { MessageListSkeleton } from './MessageListSkeleton'
+import { CutCableIllustration } from '@/shared/components/CutCableIllustration/CutCableIllustration'
+import { EmptyState } from '@/shared/components/EmptyState/EmptyState'
+import { ErrorState } from '@/shared/components/ErrorState/ErrorState'
+import { StaleDataNotice } from '@/shared/components/StaleDataNotice/StaleDataNotice'
+import { useMessageComposer } from '../../hooks/useMessageComposer'
+import { useMessages } from '../../hooks/useMessages'
+import { useSendMessage } from '../../hooks/useSendMessage'
+import { MessageComposer } from '../MessageComposer/MessageComposer'
+import { MessageList } from '../MessageList/MessageList'
+import { MessageListSkeleton } from '../MessageListSkeleton/MessageListSkeleton'
 
 interface ConversationThreadProps {
   conversationId: number

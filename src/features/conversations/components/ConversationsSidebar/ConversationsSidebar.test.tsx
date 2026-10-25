@@ -8,7 +8,7 @@ import { createTestQueryClient, renderWithProviders } from '@/test/renderWithPro
 import { conversations } from '@/test/fixtures'
 import { queryKeys } from '@/api/queryKeys'
 import { mockMobileViewport } from '@/test/mockViewport'
-import { useRememberViewedConversation } from '../hooks/useConversationFocusRestoration'
+import { useRememberViewedConversation } from '../../hooks/useConversationFocusRestoration'
 import { ConversationsSidebar } from './ConversationsSidebar'
 
 describe('ConversationsSidebar', () => {

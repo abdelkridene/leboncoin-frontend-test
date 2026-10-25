@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'jest-axe'
 import { messages } from '@/test/fixtures'
-import type { OutgoingMessage } from '../hooks/useSendMessage'
+import type { OutgoingMessage } from '../../hooks/useSendMessage'
 import { MessageList } from './MessageList'
 
 const failedMessage: OutgoingMessage = {

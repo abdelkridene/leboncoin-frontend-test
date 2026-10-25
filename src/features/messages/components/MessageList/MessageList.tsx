@@ -1,7 +1,7 @@
 import type { Message } from '@/api/schemas'
-import type { OutgoingMessage } from '../hooks/useSendMessage'
-import { useScrollToBottom } from '../hooks/useScrollToBottom'
-import { MessageBubble } from './MessageBubble'
+import type { OutgoingMessage } from '../../hooks/useSendMessage'
+import { useScrollToBottom } from '../../hooks/useScrollToBottom'
+import { MessageBubble } from '../MessageBubble/MessageBubble'
 import styles from './MessageList.module.css'
 
 interface MessageListProps {

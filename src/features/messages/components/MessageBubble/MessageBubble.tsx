@@ -1,6 +1,6 @@
 import { cn } from '@/shared/helpers/cn'
 import { formatMessageTime, toIsoString } from '@/shared/helpers/formatDate'
-import type { OutgoingStatus } from '../hooks/useSendMessage'
+import type { OutgoingStatus } from '../../hooks/useSendMessage'
 import styles from './MessageBubble.module.css'
 
 interface MessageBubbleProps {

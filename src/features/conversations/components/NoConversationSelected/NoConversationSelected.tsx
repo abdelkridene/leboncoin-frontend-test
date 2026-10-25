@@ -1,7 +1,7 @@
-import { CutCableIllustration } from '@/shared/components/CutCableIllustration'
-import { EmptyState } from '@/shared/components/EmptyState'
-import { ErrorState } from '@/shared/components/ErrorState'
-import { useConversations } from '../hooks/useConversations'
+import { CutCableIllustration } from '@/shared/components/CutCableIllustration/CutCableIllustration'
+import { EmptyState } from '@/shared/components/EmptyState/EmptyState'
+import { ErrorState } from '@/shared/components/ErrorState/ErrorState'
+import { useConversations } from '../../hooks/useConversations'
 
 export const NoConversationSelected = () => {
   const { data: conversations, isPending, refetch } = useConversations()

@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { HydrationBoundary, QueryClientProvider, type DehydratedState } from '@tanstack/react-query'
 import { createQueryClient } from '@/api/queryClient'
-import { AppShell } from '@/shared/components/AppShell'
+import { AppShell } from '@/shared/components/AppShell/AppShell'
 import '../styles/globals.css'
 
 interface PageProps {

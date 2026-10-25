@@ -1,4 +1,4 @@
-import { Skeleton } from '@/shared/components/Skeleton'
+import { Skeleton } from '@/shared/components/Skeleton/Skeleton'
 import styles from './ConversationListSkeleton.module.css'
 
 const PLACEHOLDER_COUNT = 4

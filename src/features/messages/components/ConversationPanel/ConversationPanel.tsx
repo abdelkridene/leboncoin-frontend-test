@@ -1,15 +1,15 @@
 import Link from 'next/link'
-import { CutCableIllustration } from '@/shared/components/CutCableIllustration'
-import { EmptyState } from '@/shared/components/EmptyState'
-import { ErrorState } from '@/shared/components/ErrorState'
+import { CutCableIllustration } from '@/shared/components/CutCableIllustration/CutCableIllustration'
+import { EmptyState } from '@/shared/components/EmptyState/EmptyState'
+import { ErrorState } from '@/shared/components/ErrorState/ErrorState'
 import { useFocusOnMount } from '@/shared/hooks/useFocusOnMount'
 import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
 import { useRememberViewedConversation } from '@/features/conversations/hooks/useConversationFocusRestoration'
 import { useConversation } from '@/features/conversations/hooks/useConversation'
 import { getInterlocutor } from '@/features/conversations/helpers/getInterlocutor'
-import { ConversationHeader } from './ConversationHeader'
-import { ConversationThread } from './ConversationThread'
-import { MessageListSkeleton } from './MessageListSkeleton'
+import { ConversationHeader } from '../ConversationHeader/ConversationHeader'
+import { ConversationThread } from '../ConversationThread/ConversationThread'
+import { MessageListSkeleton } from '../MessageListSkeleton/MessageListSkeleton'
 
 interface ConversationPanelProps {
   conversationId: number

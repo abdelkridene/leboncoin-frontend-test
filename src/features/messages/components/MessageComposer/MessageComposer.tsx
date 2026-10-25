@@ -1,7 +1,7 @@
 import type { FormEvent, KeyboardEvent, RefObject } from 'react'
-import { Button } from '@/shared/components/Button'
+import { Button } from '@/shared/components/Button/Button'
 import { cn } from '@/shared/helpers/cn'
-import { MAX_MESSAGE_LENGTH } from '../helpers/validateMessageBody'
+import { MAX_MESSAGE_LENGTH } from '../../helpers/validateMessageBody'
 import styles from './MessageComposer.module.css'
 
 interface MessageComposerProps {

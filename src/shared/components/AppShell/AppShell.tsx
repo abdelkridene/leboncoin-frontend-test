@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import Image from 'next/image'
 import Logo from '@/assets/lbc-logo.webp'
-import { OfflineBanner } from './OfflineBanner'
-import { SkipLink } from './SkipLink'
+import { OfflineBanner } from '../OfflineBanner/OfflineBanner'
+import { SkipLink } from '../SkipLink/SkipLink'
 import styles from './AppShell.module.css'
 
 interface AppShellProps {
