@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import Link from 'next/link'
 import { CutCableIllustration } from '@/shared/components/CutCableIllustration/CutCableIllustration'
 import { EmptyState } from '@/shared/components/EmptyState/EmptyState'
@@ -11,9 +12,11 @@ interface ConversationPanelProps {
   conversationId: number
 }
 
-export const ConversationPanel = ({ conversationId }: ConversationPanelProps) => {
-  const panel = useConversationPanel(conversationId)
+interface PanelContentProps extends ConversationPanelProps {
+  panel: ReturnType<typeof useConversationPanel>
+}
 
+const PanelContent = ({ panel, conversationId }: PanelContentProps) => {
   if (panel.status === 'loading') return <MessageListSkeleton />
   if (panel.status === 'error') {
     return (
@@ -42,6 +45,20 @@ export const ConversationPanel = ({ conversationId }: ConversationPanelProps) =>
         loggedUserId={panel.loggedUserId}
         interlocutorName={panel.interlocutorName}
       />
+    </>
+  )
+}
+
+export const ConversationPanel = ({ conversationId }: ConversationPanelProps) => {
+  const panel = useConversationPanel(conversationId)
+  const subject = panel.status === 'ready' ? panel.interlocutorName : 'Conversation'
+
+  return (
+    <>
+      <Head>
+        <title>{`${subject} - Messages - leboncoin`}</title>
+      </Head>
+      <PanelContent panel={panel} conversationId={conversationId} />
     </>
   )
 }

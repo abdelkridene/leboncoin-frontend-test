@@ -29,7 +29,6 @@ export default function ConversationPage({ conversationId }: ConversationPagePro
   return (
     <>
       <Head>
-        <title>Conversation - Messages - leboncoin</title>
         <meta name="description" content="Échangez avec les autres membres leboncoin" />
       </Head>
       <AppLayout activePanel="detail" sidebar={<ConversationsSidebar selectedConversationId={conversationId} />}>
