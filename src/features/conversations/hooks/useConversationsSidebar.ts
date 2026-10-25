@@ -4,12 +4,15 @@ import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
 import { useRestoreConversationFocus } from './useConversationFocusRestoration'
 import { useConversations } from './useConversations'
 
-export const useConversationsSidebar = () => {
+export const useConversationsSidebar = (selectedConversationId: number | null) => {
   const loggedUserId = useLoggedUserId()
   const { data: conversations, isPending, isError, refetch } = useConversations()
   const prefetchMessages = usePrefetchMessages()
   const isMobile = useIsMobile()
-  const listRef = useRestoreConversationFocus<HTMLUListElement>(isMobile && conversations !== undefined)
+  // On mobile the list hides behind an open conversation: it takes the focus back once it is on screen again.
+  const listRef = useRestoreConversationFocus<HTMLUListElement>(
+    isMobile && selectedConversationId === null && conversations !== undefined,
+  )
 
   return {
     conversations,

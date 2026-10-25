@@ -13,17 +13,17 @@ const failOnce = () =>
 
 describe('useConversationsSidebar', () => {
   it('loads the conversations of the logged user', async () => {
-    const { result } = renderHookWithProviders(() => useConversationsSidebar())
+    const { result } = renderHookWithProviders(() => useConversationsSidebar(null))
     expect(result.current.isPending).toBe(true)
     await waitFor(() => expect(result.current.conversations).toHaveLength(3))
     expect(result.current.loggedUserId).toBe(1)
   })
 
   it('reports failures itself on mobile only, where the list is the whole screen', () => {
-    expect(renderHookWithProviders(() => useConversationsSidebar()).result.current.reportsFailure).toBe(false)
+    expect(renderHookWithProviders(() => useConversationsSidebar(null)).result.current.reportsFailure).toBe(false)
 
     const restore = mockMobileViewport()
-    expect(renderHookWithProviders(() => useConversationsSidebar()).result.current.reportsFailure).toBe(true)
+    expect(renderHookWithProviders(() => useConversationsSidebar(null)).result.current.reportsFailure).toBe(true)
     restore()
   })
 
@@ -31,7 +31,7 @@ describe('useConversationsSidebar', () => {
     failOnce()
     const queryClient = createTestQueryClient()
     queryClient.setQueryData(queryKeys.conversations(1), conversations)
-    const { result } = renderHookWithProviders(() => useConversationsSidebar(), queryClient)
+    const { result } = renderHookWithProviders(() => useConversationsSidebar(null), queryClient)
 
     await waitFor(() => expect(result.current.isStale).toBe(true))
     result.current.reload()

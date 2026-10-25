@@ -52,19 +52,6 @@ describe('ConversationsSidebar', () => {
     expect(screen.getByRole('heading', { name: 'Mes conversations' })).toBeInTheDocument()
   })
 
-  it('gives the focus back to the conversation the user returns from on mobile', async () => {
-    const ViewedConversation = () => {
-      useRememberViewedConversation(2)
-      return null
-    }
-    renderWithProviders(<ViewedConversation />).unmount()
-    const restore = mockMobileViewport()
-
-    renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
-    expect(await screen.findByRole('link', { name: /Patrick/ })).toHaveFocus()
-    restore()
-  })
-
   it('keeps showing cached conversations when a refresh fails', async () => {
     server.use(http.get(apiUrl('/conversations/:userId'), () => new HttpResponse(null, { status: 503 }), { once: true }))
     const queryClient = createTestQueryClient()
@@ -79,6 +66,47 @@ describe('ConversationsSidebar', () => {
     await waitFor(() => expect(screen.queryByText(/Connexion instable/)).not.toBeInTheDocument())
   })
 
+  it('has no accessibility violations', async () => {
+    const { container } = renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
+    await screen.findAllByRole('link')
+    expect(await axe(container)).toHaveNoViolations()
+  })
+})
+
+describe('ConversationsSidebar: navigation', () => {
+  it('gives the focus back to the conversation the user returns from on mobile', async () => {
+    const ViewedConversation = () => {
+      useRememberViewedConversation(2)
+      return null
+    }
+    renderWithProviders(<ViewedConversation />).unmount()
+    const restore = mockMobileViewport()
+
+    renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
+    expect(await screen.findByRole('link', { name: /Patrick/ })).toHaveFocus()
+    restore()
+  })
+
+  it('keeps the conversation to refocus while the list hides behind an open conversation', async () => {
+    const restore = mockMobileViewport()
+    const ViewedConversation = () => {
+      useRememberViewedConversation(2)
+      return null
+    }
+    const { unmount, queryClient } = renderWithProviders(
+      <>
+        <ConversationsSidebar selectedConversationId={2} />
+        <ViewedConversation />
+      </>,
+    )
+    await screen.findAllByRole('link')
+    unmount()
+
+    renderWithProviders(<ConversationsSidebar selectedConversationId={null} />, queryClient)
+    expect(await screen.findByRole('link', { name: /Patrick/ })).toHaveFocus()
+    restore()
+  })
+
   it('prefetches the messages of a conversation on hover and focus', async () => {
     const { queryClient } = renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
     const jeremie = await screen.findByRole('link', { name: /Jeremie/ })
@@ -88,11 +116,5 @@ describe('ConversationsSidebar', () => {
 
     screen.getByRole('link', { name: /Patrick/ }).focus()
     await waitFor(() => expect(queryClient.getQueryData(queryKeys.messages(2))).toBeDefined())
-  })
-
-  it('has no accessibility violations', async () => {
-    const { container } = renderWithProviders(<ConversationsSidebar selectedConversationId={null} />)
-    await screen.findAllByRole('link')
-    expect(await axe(container)).toHaveNoViolations()
   })
 })

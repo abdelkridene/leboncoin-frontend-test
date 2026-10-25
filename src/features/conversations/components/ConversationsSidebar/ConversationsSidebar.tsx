@@ -12,7 +12,7 @@ interface ConversationsSidebarProps {
 }
 
 const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) => {
-  const sidebar = useConversationsSidebar()
+  const sidebar = useConversationsSidebar(selectedConversationId)
 
   if (sidebar.isPending) return <ConversationListSkeleton />
   if (!sidebar.conversations) {
