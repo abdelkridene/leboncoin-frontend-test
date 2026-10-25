@@ -1,11 +1,7 @@
 import { EmptyState } from '@/shared/components/EmptyState/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState/ErrorState'
 import { StaleDataNotice } from '@/shared/components/StaleDataNotice/StaleDataNotice'
-import { useIsMobile } from '@/shared/hooks/useIsMobile'
-import { useLoggedUserId } from '@/shared/hooks/useLoggedUserId'
-import { useRestoreConversationFocus } from '../../hooks/useConversationFocusRestoration'
-import { usePrefetchMessages } from '@/features/messages/hooks/usePrefetchMessages'
-import { useConversations } from '../../hooks/useConversations'
+import { useConversationsSidebar } from '../../hooks/useConversationsSidebar'
 import { ConversationList } from '../ConversationList/ConversationList'
 import { ConversationListSkeleton } from '../ConversationListSkeleton/ConversationListSkeleton'
 import { NewConversationButton } from '../NewConversationButton/NewConversationButton'
@@ -16,30 +12,25 @@ interface ConversationsSidebarProps {
 }
 
 const SidebarContent = ({ selectedConversationId }: ConversationsSidebarProps) => {
-  const loggedUserId = useLoggedUserId()
-  const { data: conversations, isPending, isError, refetch } = useConversations()
-  const prefetchMessages = usePrefetchMessages()
-  const isMobile = useIsMobile()
-  const listRef = useRestoreConversationFocus<HTMLUListElement>(isMobile && conversations !== undefined)
+  const sidebar = useConversationsSidebar()
 
-  if (isPending) return <ConversationListSkeleton />
-  if (!conversations) {
-    // On desktop the detail panel reports the failure, so the list stays empty rather than repeating it.
-    if (!isMobile) return null
-    return <ErrorState description="Impossible de charger vos conversations." onRetry={() => refetch()} />
+  if (sidebar.isPending) return <ConversationListSkeleton />
+  if (!sidebar.conversations) {
+    if (!sidebar.reportsFailure) return null
+    return <ErrorState description="Impossible de charger vos conversations." onRetry={sidebar.reload} />
   }
   return (
     <>
-      {isError && <StaleDataNotice onRetry={() => refetch()} />}
-      {conversations.length === 0 ? (
+      {sidebar.isStale && <StaleDataNotice onRetry={sidebar.reload} />}
+      {sidebar.conversations.length === 0 ? (
         <EmptyState title="Aucune conversation" description="Vos échanges avec les vendeurs apparaîtront ici." />
       ) : (
         <ConversationList
-          conversations={conversations}
-          loggedUserId={loggedUserId}
+          conversations={sidebar.conversations}
+          loggedUserId={sidebar.loggedUserId}
           selectedConversationId={selectedConversationId}
-          listRef={listRef}
-          onPrefetchConversation={prefetchMessages}
+          listRef={sidebar.listRef}
+          onPrefetchConversation={sidebar.prefetchMessages}
         />
       )}
     </>
