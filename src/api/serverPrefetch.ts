@@ -6,16 +6,20 @@ export interface PrefetchedProps {
   dehydratedState: DehydratedState | null
 }
 
+interface PrefetchResult extends PrefetchedProps {
+  queryClient: QueryClient | null
+}
+
 // Client-side navigations already have a warm cache: prefetching again would only double the API load.
 const isClientSideNavigation = (request: IncomingMessage) => Boolean(request.headers['x-nextjs-data'])
 
 export const prefetchForPage = async (
   request: IncomingMessage,
   prefetch: (queryClient: QueryClient) => Promise<unknown>[],
-): Promise<PrefetchedProps> => {
-  if (isClientSideNavigation(request)) return { dehydratedState: null }
+): Promise<PrefetchResult> => {
+  if (isClientSideNavigation(request)) return { dehydratedState: null, queryClient: null }
 
   const queryClient = createServerQueryClient()
   await prefetchWithinBudget(prefetch(queryClient))
-  return { dehydratedState: dehydrate(queryClient) }
+  return { dehydratedState: dehydrate(queryClient), queryClient }
 }

@@ -14,7 +14,7 @@ describe('prefetchForPage', () => {
   it('skips prefetching on client side navigations', async () => {
     const prefetch = jest.fn()
     const result = await prefetchForPage(requestWithHeaders({ 'x-nextjs-data': '1' }), prefetch)
-    expect(result).toEqual({ dehydratedState: null })
+    expect(result).toEqual({ dehydratedState: null, queryClient: null })
     expect(prefetch).not.toHaveBeenCalled()
   })
 })

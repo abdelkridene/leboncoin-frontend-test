@@ -18,11 +18,16 @@ export const getServerSideProps: GetServerSideProps<ConversationPageProps> = asy
   const conversationId = parseRouteId(params?.conversationId)
   if (conversationId === null) return { notFound: true }
 
-  const prefetched = await prefetchForPage(req, (queryClient) => [
-    queryClient.prefetchQuery(conversationsQuery(getLoggedUserId())),
-    queryClient.prefetchQuery(messagesQuery(conversationId)),
+  const userConversations = conversationsQuery(getLoggedUserId())
+  const { dehydratedState, queryClient } = await prefetchForPage(req, (client) => [
+    client.prefetchQuery(userConversations),
+    client.prefetchQuery(messagesQuery(conversationId)),
   ])
-  return { props: { ...prefetched, conversationId } }
+
+  const conversations = queryClient?.getQueryData(userConversations.queryKey)
+  if (conversations && !conversations.some(({ id }) => id === conversationId)) return { notFound: true }
+
+  return { props: { dehydratedState, conversationId } }
 }
 
 export default function ConversationPage({ conversationId }: ConversationPageProps): ReactElement {

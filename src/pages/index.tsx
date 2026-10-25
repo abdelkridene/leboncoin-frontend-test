@@ -8,11 +8,12 @@ import { conversationsQuery } from '@/features/conversations/hooks/conversations
 import { AppLayout } from '@/shared/components/AppLayout/AppLayout'
 import { getLoggedUserId } from '@/utils/getLoggedUserId'
 
-export const getServerSideProps: GetServerSideProps<PrefetchedProps> = async ({ req }) => ({
-  props: await prefetchForPage(req, (queryClient) => [
+export const getServerSideProps: GetServerSideProps<PrefetchedProps> = async ({ req }) => {
+  const { dehydratedState } = await prefetchForPage(req, (queryClient) => [
     queryClient.prefetchQuery(conversationsQuery(getLoggedUserId())),
-  ]),
-})
+  ])
+  return { props: { dehydratedState } }
+}
 
 export default function Home(): ReactElement {
   return (
