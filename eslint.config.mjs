@@ -18,10 +18,6 @@ const eslintConfig = [
     },
   },
   {
-    files: ['**/*.test.ts', '**/*.test.tsx'],
-    rules: { 'max-lines-per-function': 'off' },
-  },
-  {
     files: ['**/*.js'],
     rules: { '@typescript-eslint/no-require-imports': 'off' },
   },

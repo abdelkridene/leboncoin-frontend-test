@@ -14,7 +14,7 @@ const renderThread = (conversationId = 1) =>
 
 const field = () => screen.getByRole('textbox', { name: 'Message à Jeremie' })
 
-describe('ConversationThread', () => {
+describe('ConversationThread: writing and sending', () => {
   it('sends a message, clears the field and keeps the focus in it', async () => {
     renderThread()
     await screen.findByRole('log')
@@ -62,6 +62,22 @@ describe('ConversationThread', () => {
     expect(postCount).toBe(1)
   })
 
+  it('lets the user send the first message of an empty conversation', async () => {
+    renderThread(3)
+    expect(await screen.findByText('Aucun message')).toBeInTheDocument()
+
+    await userEvent.type(field(), 'Bonjour !{Enter}')
+    expect(await screen.findByRole('log')).toHaveTextContent('Bonjour !')
+  })
+
+  it('has no accessibility violations', async () => {
+    const { container } = renderThread()
+    await screen.findByRole('log')
+    expect(await axe(container)).toHaveNoViolations()
+  })
+})
+
+describe('ConversationThread: when the server fails', () => {
   it('keeps a failed message visible and lets the user retry it', async () => {
     server.use(http.post(apiUrl('/messages/1'), () => new HttpResponse(null, { status: 503 }), { once: true }))
     renderThread()
@@ -75,14 +91,6 @@ describe('ConversationThread', () => {
     expect(field()).toHaveFocus()
     await waitFor(() => expect(screen.queryByText(/Échec de l’envoi/)).not.toBeInTheDocument())
     expect(screen.getByText('Dernier prix ?')).toBeInTheDocument()
-  })
-
-  it('lets the user send the first message of an empty conversation', async () => {
-    renderThread(3)
-    expect(await screen.findByText('Aucun message')).toBeInTheDocument()
-
-    await userEvent.type(field(), 'Bonjour !{Enter}')
-    expect(await screen.findByRole('log')).toHaveTextContent('Bonjour !')
   })
 
   it('shows an error when messages cannot be loaded and recovers', async () => {
@@ -130,11 +138,5 @@ describe('ConversationThread', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Actualiser' }))
     await waitFor(() => expect(screen.queryByText(/Connexion instable/)).not.toBeInTheDocument())
-  })
-
-  it('has no accessibility violations', async () => {
-    const { container } = renderThread()
-    await screen.findByRole('log')
-    expect(await axe(container)).toHaveNoViolations()
   })
 })

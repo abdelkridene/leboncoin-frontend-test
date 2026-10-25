@@ -14,9 +14,7 @@ const setup = () => {
   return hook
 }
 
-describe('useSendMessage', () => {
-  afterEach(() => jest.useRealTimers())
-
+describe('useSendMessage: delivery', () => {
   it('shows the message as pending, then appends it to the conversation', async () => {
     let release: () => void = () => undefined
     server.use(
@@ -51,6 +49,30 @@ describe('useSendMessage', () => {
     expect(updated.lastMessageTimestamp).toBeGreaterThan(0)
   })
 
+  it('forgets delivered messages so the mutation cache does not grow', async () => {
+    const { result, queryClient } = setup()
+    act(() => result.current.send('Salut'))
+    await waitFor(() => expect(queryClient.getMutationCache().getAll()).toHaveLength(0))
+  })
+
+  it('never invents a history that was not loaded', async () => {
+    const { result, queryClient } = renderHookWithProviders(() => useSendMessage(3))
+    act(() => result.current.send('Premier message'))
+    await waitFor(() => expect(result.current.outgoingMessages).toHaveLength(0))
+    expect(queryClient.getQueryData(queryKeys.messages(3))).toBeUndefined()
+    expect(queryClient.getQueryData(queryKeys.conversations(1))).toBeUndefined()
+  })
+
+  it('invalidates the conversation once delivered, so the server copy wins', async () => {
+    const { result, queryClient } = setup()
+    act(() => result.current.send('Salut'))
+    await waitFor(() => expect(queryClient.getQueryState(queryKeys.messages(1))?.isInvalidated).toBe(true))
+  })
+})
+
+describe('useSendMessage: failures and retries', () => {
+  afterEach(() => jest.useRealTimers())
+
   it('keeps a failed message and sends it again on retry', async () => {
     server.use(http.post(apiUrl('/messages/1'), () => new HttpResponse(null, { status: 503 }), { once: true }))
     const { result, queryClient } = setup()
@@ -78,12 +100,6 @@ describe('useSendMessage', () => {
     expect(result.current.outgoingMessages.map(({ body }) => body)).toEqual(['Premier', 'Second'])
   })
 
-  it('forgets delivered messages so the mutation cache does not grow', async () => {
-    const { result, queryClient } = setup()
-    act(() => result.current.send('Salut'))
-    await waitFor(() => expect(queryClient.getMutationCache().getAll()).toHaveLength(0))
-  })
-
   it('stamps a retried message with the time it is sent again', async () => {
     jest.useFakeTimers({ now: new Date('2021-07-07T10:00:00Z'), doNotFake: ['nextTick', 'queueMicrotask', 'setImmediate'] })
     const postedTimestamps: number[] = []
@@ -108,19 +124,5 @@ describe('useSendMessage', () => {
     const { result } = setup()
     expect(() => act(() => result.current.retry(12345))).not.toThrow()
     expect(result.current.outgoingMessages).toHaveLength(0)
-  })
-
-  it('never invents a history that was not loaded', async () => {
-    const { result, queryClient } = renderHookWithProviders(() => useSendMessage(3))
-    act(() => result.current.send('Premier message'))
-    await waitFor(() => expect(result.current.outgoingMessages).toHaveLength(0))
-    expect(queryClient.getQueryData(queryKeys.messages(3))).toBeUndefined()
-    expect(queryClient.getQueryData(queryKeys.conversations(1))).toBeUndefined()
-  })
-
-  it('invalidates the conversation once delivered, so the server copy wins', async () => {
-    const { result, queryClient } = setup()
-    act(() => result.current.send('Salut'))
-    await waitFor(() => expect(queryClient.getQueryState(queryKeys.messages(1))?.isInvalidated).toBe(true))
   })
 })
