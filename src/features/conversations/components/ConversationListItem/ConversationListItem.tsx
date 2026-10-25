@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { Avatar } from '@/shared/components/Avatar/Avatar'
+import { Timestamp } from '@/shared/components/Timestamp/Timestamp'
 import { cn } from '@/shared/helpers/cn'
-import { formatConversationDate, toIsoString } from '@/shared/helpers/formatDate'
+import { formatConversationDate } from '@/shared/helpers/formatDate'
 import styles from './ConversationListItem.module.css'
 
 interface ConversationListItemProps {
@@ -30,10 +31,7 @@ export const ConversationListItem = ({
       <Avatar name={interlocutorName} />
       <span className={styles.content}>
         <span className={styles.name}>{interlocutorName}</span>
-        {/* The server and the browser may not share a timezone; the browser's rendering wins. */}
-        <time className={styles.date} dateTime={toIsoString(lastMessageTimestamp)} suppressHydrationWarning>
-          {formatConversationDate(lastMessageTimestamp)}
-        </time>
+        <Timestamp value={lastMessageTimestamp} format={formatConversationDate} className={styles.date} />
       </span>
     </Link>
   </li>

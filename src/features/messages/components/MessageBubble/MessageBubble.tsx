@@ -1,5 +1,6 @@
 import { cn } from '@/shared/helpers/cn'
-import { formatMessageTime, toIsoString } from '@/shared/helpers/formatDate'
+import { formatMessageTime } from '@/shared/helpers/formatDate'
+import { Timestamp } from '@/shared/components/Timestamp/Timestamp'
 import type { OutgoingStatus } from '../../hooks/useSendMessage'
 import styles from './MessageBubble.module.css'
 
@@ -32,10 +33,7 @@ export const MessageBubble = ({ body, timestamp, isMine, authorName, status, onR
     {status ? (
       <DeliveryStatus status={status} onRetry={onRetry} isRetryDisabled={isRetryDisabled} />
     ) : (
-      // The server and the browser may not share a timezone; the browser's rendering wins.
-      <time className={styles.time} dateTime={toIsoString(timestamp)} suppressHydrationWarning>
-        {formatMessageTime(timestamp)}
-      </time>
+      <Timestamp value={timestamp} format={formatMessageTime} className={styles.time} />
     )}
   </li>
 )
