@@ -5,9 +5,8 @@ import { ErrorState } from '@/shared/components/ErrorState/ErrorState'
 import { Skeleton } from '@/shared/components/Skeleton/Skeleton'
 import { useModalDialog } from '@/shared/hooks/useModalDialog'
 import type { RecipientOption } from '../../helpers/getRecipientOptions'
+import type { RecipientsStatus } from '../../hooks/useNewConversation'
 import styles from './NewConversationDialog.module.css'
-
-export type RecipientsStatus = 'loading' | 'error' | 'ready'
 
 interface NewConversationDialogProps {
   isOpen: boolean
