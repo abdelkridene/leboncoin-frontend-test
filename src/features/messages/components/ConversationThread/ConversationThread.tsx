@@ -2,9 +2,7 @@ import { CutCableIllustration } from '@/shared/components/CutCableIllustration/C
 import { EmptyState } from '@/shared/components/EmptyState/EmptyState'
 import { ErrorState } from '@/shared/components/ErrorState/ErrorState'
 import { StaleDataNotice } from '@/shared/components/StaleDataNotice/StaleDataNotice'
-import { useMessageComposer } from '../../hooks/useMessageComposer'
-import { useMessages } from '../../hooks/useMessages'
-import { useSendMessage } from '../../hooks/useSendMessage'
+import { useConversationThread } from '../../hooks/useConversationThread'
 import { MessageComposer } from '../MessageComposer/MessageComposer'
 import { MessageList } from '../MessageList/MessageList'
 import { MessageListSkeleton } from '../MessageListSkeleton/MessageListSkeleton'
@@ -16,9 +14,8 @@ interface ConversationThreadProps {
 }
 
 export const ConversationThread = ({ conversationId, loggedUserId, interlocutorName }: ConversationThreadProps) => {
-  const { data: messages, isPending, isError, refetch } = useMessages(conversationId)
-  const { outgoingMessages, send, retry, isSending } = useSendMessage(conversationId)
-  const composer = useMessageComposer({ onSend: send, isSending })
+  const { messages, isPending, isError, reload, outgoingMessages, isSending, retry, composer } =
+    useConversationThread(conversationId)
 
   const renderMessages = () => {
     if (isPending) return <MessageListSkeleton />
@@ -27,7 +24,7 @@ export const ConversationThread = ({ conversationId, loggedUserId, interlocutorN
         <ErrorState
           illustration={<CutCableIllustration />}
           description="Impossible de charger les messages."
-          onRetry={() => refetch()}
+          onRetry={reload}
         />
       )
     }
@@ -48,7 +45,7 @@ export const ConversationThread = ({ conversationId, loggedUserId, interlocutorN
 
   return (
     <>
-      {isError && messages && <StaleDataNotice onRetry={() => refetch()} />}
+      {isError && messages && <StaleDataNotice onRetry={reload} />}
       {renderMessages()}
       <MessageComposer
         draft={composer.draft}
